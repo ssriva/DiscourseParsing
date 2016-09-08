@@ -1,25 +1,32 @@
-package testing;
+package discourseparser;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
+import java.io.PrintWriter;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 import instructable.server.ccg.CcgUtils;
+import instructable.server.ccg.WeightedCcgExample;
 
+import com.jayantkrish.jklol.ccg.CcgBeamSearchInference;
+import com.jayantkrish.jklol.ccg.CcgInference;
 import com.jayantkrish.jklol.ccg.lambda2.ExpressionComparator;
 import com.jayantkrish.jklol.ccg.lambda2.ExpressionSimplifier;
 import com.jayantkrish.jklol.ccg.lambda2.SimplificationComparator;
+import com.jayantkrish.jklol.ccg.util.SemanticParserUtils;
 
-import discourseparser.DiscourseParser;
-import discourseparser.DiscourseParsingUtils;
-
-public class TestStructuredCcgParser {
+public class TestingStructuredCcgParser {
 
 	public static ExpressionSimplifier simplifier = CcgUtils.getExpressionSimplifier();
 	public static ExpressionComparator comparator = new SimplificationComparator(simplifier);
@@ -37,27 +44,41 @@ public class TestStructuredCcgParser {
 		//Initialize discourse parser
 		boolean pretrain = false;
 		DiscourseParser discourseParser = new DiscourseParser("data/lexiconEntries.txt", "data/lexiconSyn.txt", trainingDirectory, numStates, pretrain);
-
+		
+		/*
+		System.out.println("simple evaluation");
+		CcgInference inferenceAlgorithm = new CcgBeamSearchInference(null, comparator, 100, -1, Integer.MAX_VALUE, Runtime.getRuntime().availableProcessors(), false);	    
+		List<WeightedCcgExample> flatExamples = discourseParser.ccgExamples.stream().flatMap(l -> l.stream()).collect(Collectors.toList());
+		SemanticParserUtils.testSemanticParser(WeightedCcgExample.toCcgExamples(flatExamples), discourseParser.parser, inferenceAlgorithm, simplifier, comparator);
+		System.exit(0);
+		*/
+		
+		//Calculate total recall
+		/*
+		System.out.println("Testing total recall!");
+		CcgInference inferenceAlgorithm = new CcgBeamSearchInference(null, comparator, 100, -1, Integer.MAX_VALUE, Runtime.getRuntime().availableProcessors(), false);
+		List<WeightedCcgExample> flatExamples = discourseParser.ccgExamples.stream().flatMap(l -> l.stream()).collect(Collectors.toList());
+		DiscourseParsingUtils.testTotalRecall(WeightedCcgExample.toCcgExamples(flatExamples), discourseParser.parser, inferenceAlgorithm, simplifier, comparator);
+		System.exit(0);
+		*/
+		
 		//Train discourse Parser
+		System.out.println("Training weights...");
 		discourseParser.trainWeights(numIters, beamSize, maxLogicalForms);
 		
 		//Evaluate discourse parser
-		//String testDirectory = "/Users/shashans/Work/DialogueData/dialogues/tabseparated/train/";
+		String testDirectory = "/Users/shashans/Work/DialogueData/dialogues/tabseparated/test/";
 		//DiscourseParsingUtils.testDiscourseParser(discourseParser.getNewCcgSequences(testDirectory), discourseParser, beamSize, maxLogicalForms, simplifier, comparator);
 		DiscourseParsingUtils.testDiscourseParser(discourseParser.ccgExamples, discourseParser, beamSize, maxLogicalForms, simplifier, comparator);
-
-		//Save model
-		System.exit(0);
+		DiscourseParsingUtils.testDiscourseParser(discourseParser.getNewCcgSequences(testDirectory), discourseParser, beamSize, maxLogicalForms, simplifier, comparator);
+		//System.exit(0);
+		
+		//Save model	
 		String modelName=trainingDirectory+"model_"+numIters+"_"+beamSize+"_"+maxLogicalForms+"_"+numStates+"_"+pretrain;
 		saveToFile(discourseParser.parserParameters, modelName+".parserParams");
-		saveToFile(discourseParser.weights, modelName+".weights");
-		
-		/*Simple parser evaluation*/
-		//CcgInference inferenceAlgorithm = new CcgBeamSearchInference(null, comparator, 100, -1, Integer.MAX_VALUE, Runtime.getRuntime().availableProcessors(), false);	    
-		//System.out.println("training error");
-		//List<WeightedCcgExample> flatExamples = dsParser.ccgExamples.stream().flatMap(l -> l.stream()).collect(Collectors.toList());
-		//SemanticParserUtils.testSemanticParser(WeightedCcgExample.toCcgExamples(flatExamples), dsParser.parser, inferenceAlgorithm, simplifier, comparator);
-		/**/    
+		//saveToFile(discourseParser.weights, modelName+".weights");
+		writeWeights(discourseParser.weights, modelName+".weights");
+		  
 	}
 
 	public static void saveToFile(Object obj, String fileName){
@@ -66,6 +87,18 @@ public class TestStructuredCcgParser {
 			output.writeObject(obj);
 			output.close();
 		}catch(IOException e){
+			e.printStackTrace();
+		}
+	}
+	
+	public static void writeWeights(HashMap<String,Double> weights, String outFile){
+		try {
+			PrintWriter writer = new PrintWriter(outFile);
+			for(Entry<String,Double> e:weights.entrySet()){
+				writer.println(e.getKey()+"\t"+e.getValue());
+			}
+			writer.close();
+		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
 	}

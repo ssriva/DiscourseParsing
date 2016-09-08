@@ -26,7 +26,7 @@ import com.jayantkrish.jklol.ccg.lambda2.SimplificationComparator;
 
 public class Decoder {
 
-	protected static boolean verbose = false;
+	public static boolean verbose = false;
 	private static ExpressionSimplifier simplifier = CcgUtils.getExpressionSimplifier();
 	private static ExpressionComparator comparator = new SimplificationComparator(simplifier);
 	
@@ -35,45 +35,6 @@ public class Decoder {
 		return sequence.stream().map( e -> parser.beamSearch(e.getSentence(), beamSize)).collect(Collectors.toList());
 	}
 
-	//Get distinct Parses for individual sentences in a sequence: [N X b] parses
-	public static List<List<CcgParse>> getDistinctIndividualParsesForSequence(CcgParser parser, List<WeightedCcgExample> sequence, int beamSize){
-		List<List<CcgParse>> distinctParsesList = new ArrayList<List<CcgParse>>();
-	
-		//Do for each sequence
-		for(List<CcgParse> parses:sequence.stream().map( e -> parser.beamSearch(e.getSentence(), beamSize)).collect(Collectors.toList())){
-			List<CcgParse> distinctParses = new ArrayList<CcgParse>();
-			HashSet<String> hs = new HashSet<String>();
-			
-			//Add distinct parses(with non-equivalent logical forms) only
-			for(CcgParse parse:parses){
-				if(!hs.contains(ParsingUtils.simplify(parse))){
-					hs.add(ParsingUtils.simplify(parse));
-					distinctParses.add(parse);
-				}
-			}
-			distinctParsesList.add(distinctParses);
-		}		
-		return distinctParsesList;
-	}
-	
-	public static List<List<CcgParse>> getGoldIndividualParsesForSequence(CcgParser parser, List<WeightedCcgExample> sequence, int beamSize){
-		
-		List<List<CcgParse>> correctParsesList = sequence.stream()
-		.map( e -> PerceptronUtils.filterParsesByLogicalForm( 	e.getLogicalForm(), comparator, 
-																parser.beamSearch(e.getSentence(), beamSize), true)
-			).collect(Collectors.toList());
-				
-		List<List<CcgParse>> bestCorrectParsesList = new ArrayList<List<CcgParse>>();
-		for(List<CcgParse> correctParses:correctParsesList){
-			if (correctParses.size() == 0 || correctParses==null) {
-				bestCorrectParsesList.add(new ArrayList<CcgParse>());
-			}else{
-				bestCorrectParsesList.add(Arrays.asList(correctParses.get(0)));
-			}
-		}
-		Preconditions.checkState(sequence.size()==bestCorrectParsesList.size());
-		return bestCorrectParsesList;	
-	}
 	
 	public static List<List<List<CcgParseWrapper>>> getGoldAndCandidateParsesForSequence(DiscourseParser discourseParser,
 																						 List<WeightedCcgExample> sequence, 
@@ -87,6 +48,7 @@ public class Decoder {
 		List<List<CcgParseWrapper>> candidateParsesList = new ArrayList<List<CcgParseWrapper>>();		
 		for(int i=0; i<parseLists.size(); i++){
 			//For each sentence in the sequence
+			System.out.println("Processing "+parseLists.get(i).size()+" parses for sentence: "+sequence.get(i).getSentence());
 			List<CcgParse> parses = parseLists.get(i);
 			
 			List<CcgParseWrapper> distinctParsesForSentence = new ArrayList<CcgParseWrapper>();
@@ -95,7 +57,7 @@ public class Decoder {
 			
 			for(int j=0; j<parses.size(); j++){
 				if(!hs.contains(ParsingUtils.simplify(parses.get(j))) ){
-					//if(ParsingUtils.simplify(parses.get(j)).startsWith("(lambda") || ParsingUtils.simplify(parses.get(j)).startsWith("(string") || ParsingUtils.simplify(parses.get(j)).startsWith("**skip") ){ continue; }
+					if(ParsingUtils.simplify(parses.get(j)).startsWith("(lambda") || ParsingUtils.simplify(parses.get(j)).startsWith("(string") || ParsingUtils.simplify(parses.get(j)).startsWith("**skip") ){ continue; }
 					
 					if(verbose) System.out.println("DISTINCT PARSE:\t"+ParsingUtils.simplify(parses.get(j))+" for sentence: "+sequence.get(i).getSentence());
 					hs.add(ParsingUtils.simplify(parses.get(j)));
@@ -120,16 +82,16 @@ public class Decoder {
 			//Supplement parse beam with other candidate logical forms. Possible strategies:1.Oracle 2.Training 3.PMI 4.VSrepresentations
 			candidateParsesList.add(new ArrayList<CcgParseWrapper>());
 			candidateParsesList.get(i).addAll(distinctParsesForSentence);	//Add original parser beam
-			//Preconditions.checkState(distinctParsesForSentence.size()>0, "No distinct parses found for sentence: "+sequence.get(i).getSentence()+" with "+parses.size()+" parses: "+parses);
+			Preconditions.checkState(distinctParsesForSentence.size()>0, "No distinct parses found for sentence: "+sequence.get(i).getSentence()+" with "+parses.size()+" parses: "+parses);
 
 			//Oracle expansion, if not already present, add true logical form and 9 others as assigned candidate logical forms
 			
-			//if(!hs_best.contains(ParsingUtils.simplify(sequence.get(i)))){
-			//	candidateParsesList.get(i).add( new CcgParseWrapper(ParsingUtils.simplify(sequence.get(i))) );
-			//	hs_best.add(ParsingUtils.simplify(sequence.get(i)));
-			//}
-			
 			/*
+			if(!hs_best.contains(ParsingUtils.simplify(sequence.get(i)))){
+				candidateParsesList.get(i).add( new CcgParseWrapper(ParsingUtils.simplify(sequence.get(i))) );
+				hs_best.add(ParsingUtils.simplify(sequence.get(i)));
+			}
+			
 			for(int c=0;c<9;c++){
 				String str = discourseParser.dataStatistics.getUniformRandomLogicalFormFromTraining(); //.mostCommon.get(c); //discourseParser.dataStatistics.getWeightedRandomLogicalFormFromTraining();
 				if(!hs_best.contains(str)){
@@ -141,14 +103,14 @@ public class Decoder {
 			
 			
 			//Training set expansion: add most common candidates from training set
-			/*
+			/**/
 			for(int c=0; c<15; c++){
 				String str = discourseParser.dataStatistics.mostCommon.get(c);
 				if(!hs_best.contains(str)){
 					candidateParsesList.get(i).add(new CcgParseWrapper(str));
 					hs_best.add(str);
 				}
-			}*/
+			}/**/
 						
 			if(verbose) System.out.println("SZDIST: "+candidateParsesList.get(0).size());
 			
@@ -156,7 +118,7 @@ public class Decoder {
 		}		
 		retVal.add(candidateParsesList);
 		
-		//Next add best gold parses (if any)
+		//Now add best gold parses. If none are present, add a CcgParseWrapper with only the true label (and print NOT AWESOME).
 		List<List<CcgParseWrapper>> bestCorrectParsesList = new ArrayList<List<CcgParseWrapper>>();
 		for(int i=0;i<parseLists.size();i++){
 			List<CcgParse>correctParses = PerceptronUtils.filterParsesByLogicalForm(sequence.get(i).getLogicalForm(), comparator, parseLists.get(i), true);
@@ -174,6 +136,7 @@ public class Decoder {
 		return retVal;
 	}
 	
+	
 	public static SequenceParse decode(List<WeightedCcgExample> sequence, 
 									DiscourseParser discourseParser, 
 									int beamSize, 
@@ -181,7 +144,7 @@ public class Decoder {
 									Boolean useLabels
 									){
 		
-		System.out.println("\nGetting parses for new sequence with "+sequence.size()+" elements.");
+		System.out.println("\nDecoding new sequence with "+sequence.size()+" elements.");
 		List<List<List<CcgParseWrapper>>> pLists = getGoldAndCandidateParsesForSequence(discourseParser, sequence, beamSize, maxLog);
 		//boolean[] missing = new boolean[sequence.size()];
 		//IntStream.range(0, sequence.size()).forEach( i -> missing[i]=(pLists.get(1).get(i).size()==0));; 		
@@ -319,7 +282,7 @@ public class Decoder {
 		}
 		featureScorer.stateScore( 1, optimalTags[1], optimalParses[1], "<START>", -1);
 
-		System.out.println("Calculating return value");
+		if(verbose) System.out.println("Calculating return value");
 		/*Return pair of best path and best individual parses*/
 		List<CcgParseWrapper> bestParses = new ArrayList<CcgParseWrapper>();
 		for(int i=1;i<sequence.size()+1;i++){

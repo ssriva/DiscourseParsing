@@ -58,7 +58,11 @@ public class PerceptronUtils {
 
 			List<CcgParse> parses = inferenceAlgorithm.beamSearch(parserFamily.getModelFromParameters(parserParameters), example.getSentence(), null, log);
 
-			if (parses.size() == 0) { continue;}
+			if (parses.size() == 0) { 
+				System.err.println("No parse found for sentence: "+example.getSentence());
+				System.exit(0);
+				continue;
+			}
 			CcgParse bestPredictedParse = parses.get(0);
 
 			List<CcgParse> correctParses = filterParsesByLogicalForm(example.getLogicalForm(), comparator, parses, example.getWeight() > 0);
@@ -154,6 +158,8 @@ public class PerceptronUtils {
 			List<CcgParse> parses = inferenceAlgorithm.beamSearch(currentModel, example.getSentence(), null, log);
 
 			if (parses.size() == 0) { //throw new ZeroProbabilityError();
+				System.out.println("No parses for this sentence");
+				System.exit(0);
 				continue;
 			}
 			CcgParse bestPredictedParse = parses.get(0);

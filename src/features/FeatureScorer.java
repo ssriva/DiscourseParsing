@@ -10,6 +10,7 @@ import com.jayantkrish.jklol.ccg.lambda2.ExpressionComparator;
 import com.jayantkrish.jklol.ccg.lambda2.ExpressionSimplifier;
 import com.jayantkrish.jklol.ccg.lambda2.SimplificationComparator;
 
+import discourseparser.Decoder;
 import instructable.server.ccg.CcgUtils;
 import instructable.server.ccg.WeightedCcgExample;
 
@@ -67,15 +68,18 @@ public class FeatureScorer {
 			System.out.println("val should not be initialized to NaN, resetting to 0.0 !");
 			val = 0.0;
 		}
-
 		Preconditions.checkState(!Double.isNaN(val), "val should be a real number, but is initialized to "+val);
+
+		double discourse_val = 0.0;
 		for(String s:FeatureGenerator.generate(sequence, index, state, curLogicalForm, prevstate, prevLogicalForm, isTrue)){
 			if(hmap.containsKey(s)){
-				val += hmap.get(s);
-				Preconditions.checkState(!Double.isNaN(val), "val should be a real number, but is NaN after adding weight "+hmap.get(s)+" for feature "+s);
+				discourse_val += hmap.get(s);
+				Preconditions.checkState(!Double.isNaN(discourse_val), "val should be a real number, but is NaN after adding weight "+hmap.get(s)+" for feature "+s);
 			}
 		}
-		return val;
+		
+		if(Decoder.verbose){	System.out.println("val: "+val+"\tdiscourse_val: "+discourse_val+"\tpercent: "+Math.abs(val)/(Math.abs(val)+Math.abs(discourse_val)));}
+		return (val+discourse_val);
 	}
 	
 }

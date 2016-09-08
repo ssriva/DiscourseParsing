@@ -5,6 +5,7 @@ import instructable.server.ccg.CcgUtils;
 import instructable.server.ccg.WeightedCcgExample;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -12,10 +13,12 @@ import java.util.List;
 
 import parsing.SimpleParserSettings;
 import utils.ParsingUtils;
+import utils.PerceptronUtils;
 import utils.SequenceParse;
 
 import com.google.common.collect.Lists;
 import com.jayantkrish.jklol.ccg.CcgExample;
+import com.jayantkrish.jklol.ccg.CcgParse;
 import com.jayantkrish.jklol.ccg.CcgParser;
 import com.jayantkrish.jklol.ccg.ParametricCcgParser;
 import com.jayantkrish.jklol.ccg.lambda.ExpressionParser;
@@ -105,7 +108,7 @@ public class DiscourseParser implements Serializable {
 		for (int passIdx = 0; passIdx < numPasses; passIdx++) {
 			System.out.println("Pass "+passIdx);
 			List<List<WeightedCcgExample>> shuffledSequences = new LinkedList<List<WeightedCcgExample>>(ccgExamples);
-			//Collections.shuffle(shuffledSequences);
+			Collections.shuffle(shuffledSequences);
 			
 			int epochCorrect = 0, epochCounter = 0;
 
@@ -126,7 +129,25 @@ public class DiscourseParser implements Serializable {
 					
 					if(Decoder.verbose) System.out.println("ITER"+(counter++)); //(iter+i));
 					WeightedCcgExample example = sequence.get(i);
-
+					
+					/*
+					List<CcgParse> parses = this.parser.beamSearch(example.getSentence(), 200);
+					if (parses.size() == 0) { continue;}
+					CcgParse bestPredictedParse = parses.get(0);
+					List<CcgParse> correctParses = PerceptronUtils.filterParsesByLogicalForm(example.getLogicalForm(), ParsingUtils.comparator, parses, example.getWeight() > 0);
+					if (correctParses.size() == 0) {
+						System.out.println("Search error (Correct): " + example.getSentence() + " " + example.getLogicalForm());
+						System.out.println("predicted: " + bestPredictedParse.getLogicalForm());
+						continue;
+					}
+					CcgParse bestCorrectParse = correctParses.get(0);
+					parserFamily.incrementSufficientStatistics(gradient, parserParameters, example.getSentence(), bestPredictedParse, -1.0 * Math.abs(example.getWeight()));
+					parserFamily.incrementSufficientStatistics(gradient, parserParameters, example.getSentence(), bestCorrectParse, 1.0 * Math.abs(example.getWeight()));
+					if(true){
+						continue;
+					}
+					*/
+					
 					/*
 					if (bestCorrectSequenceParse.parses.get(i) == null) {
 					      //Earlier: If no correct parses in candidates, do not learn parserParams on this example.
@@ -138,12 +159,28 @@ public class DiscourseParser implements Serializable {
 					parserFamily.incrementSufficientStatistics(gradient, parserParameters, example.getSentence(), bestCorrectSequenceParse.parses.get(i), 1.0 * Math.abs(example.getWeight()));
 					*/
 					
+					
+					if(bestPredictedSequenceParse.parses.get(i).isTrueParse() && bestCorrectSequenceParse.parses.get(i).isTrueParse() ){
+						parserFamily.incrementSufficientStatistics(gradient, parserParameters, example.getSentence(), bestPredictedSequenceParse.parses.get(i).getCcgParse(), -1.0 * Math.abs(example.getWeight()));
+						parserFamily.incrementSufficientStatistics(gradient, parserParameters, example.getSentence(), bestCorrectSequenceParse.parses.get(i).getCcgParse(), 1.0 * Math.abs(example.getWeight()));
+						System.out.println("TYPE 5: good");
+					}else{
+						System.out.println("TYPE 6: bad");
+					}
+					
+					/*
 					if(bestPredictedSequenceParse.parses.get(i).isTrueParse()){
 						parserFamily.incrementSufficientStatistics(gradient, parserParameters, example.getSentence(), bestPredictedSequenceParse.parses.get(i).getCcgParse(), -1.0 * Math.abs(example.getWeight()));
 					}
 					if(bestCorrectSequenceParse.parses.get(i).isTrueParse()){
 						parserFamily.incrementSufficientStatistics(gradient, parserParameters, example.getSentence(), bestCorrectSequenceParse.parses.get(i).getCcgParse(), 1.0 * Math.abs(example.getWeight()));
-					}		
+					}	
+					
+					if(bestPredictedSequenceParse.parses.get(i).isTrueParse() && bestCorrectSequenceParse.parses.get(i).isTrueParse()){	System.out.println("TYPE 1: good");}
+					if(!bestPredictedSequenceParse.parses.get(i).isTrueParse() && !bestCorrectSequenceParse.parses.get(i).isTrueParse()){System.out.println("TYPE 2: both fail");}
+					if(bestPredictedSequenceParse.parses.get(i).isTrueParse() && !bestCorrectSequenceParse.parses.get(i).isTrueParse()){System.out.println("TYPE 3: no true parse that is correct");}
+					if(!bestPredictedSequenceParse.parses.get(i).isTrueParse() && bestCorrectSequenceParse.parses.get(i).isTrueParse()){System.out.println("TYPE 4: shouldn't be here");}
+					*/
 					
 					int correct = bestPredictedSequenceParse.parses.get(i).getStringLogicalForm().equals(ParsingUtils.simplify(example)) ? 1 : 0;
 					epochCorrect+=correct;
@@ -156,6 +193,8 @@ public class DiscourseParser implements Serializable {
 				gradient.zeroOut();	
 				
 				//Update for discourse weights
+				Boolean updateDiscourseFeatures = true;
+				if(updateDiscourseFeatures){
 				HashMap<String, Double> featureMapPrediction = FeatureGenerator.getFeatureMap(sequence, bestPredictedSequenceParse.parses, bestPredictedSequenceParse.bestPath);
 				HashMap<String, Double> featureMapCorrect = FeatureGenerator.getFeatureMap(sequence, bestCorrectSequenceParse.parses, bestCorrectSequenceParse.bestPath);
 				
@@ -176,6 +215,7 @@ public class DiscourseParser implements Serializable {
 					weights.put(s, weights.get(s)*(1.0 - (currentStepSize * l2penalty)) );
 					weights.put(s, weights.get(s) + currentStepSize*(featureMapCorrect.get(s) - featureMapPrediction.get(s)) );
 					//cumulativeweights.put(s, cumulativeweights.get(s)+weights.get(s));
+				}
 				}
 				/*End of Update on Sequence*/
 				

@@ -6,6 +6,7 @@ import java.util.List;
 
 import utils.CcgParseWrapper;
 import utils.ParsingUtils;
+import utils.PerceptronUtils;
 
 import com.jayantkrish.jklol.ccg.CcgExample;
 import com.jayantkrish.jklol.ccg.CcgInference;
@@ -26,6 +27,8 @@ public class DiscourseParsingUtils {
 		int numCorrect = 0;
 		int numParsed = 0;
 		int counter = 0;
+		
+		int numCorrectDerived = 0 , numCorrectUnderived = 0, numDerived = 0, numUnderived =0;
 
 		for (List<WeightedCcgExample> exampleSequence : testExampleSequences) {
 
@@ -38,8 +41,10 @@ public class DiscourseParsingUtils {
 				WeightedCcgExample example = exampleSequence.get(i);
 				CcgParseWrapper parse = bestPredictedSequenceParse.get(i);
 				
-				System.out.println("====");
-				System.out.println("SENT: " + example.getSentence().getWords());
+				Boolean couldDerive = (PerceptronUtils.filterParsesByLogicalForm(example.getLogicalForm(), ParsingUtils.comparator, discourseParser.parser.beamSearch(example.getSentence(), 200), true).size() > 0);
+				
+				if(Decoder.verbose) System.out.println("====");
+				if(Decoder.verbose) System.out.println("SENT: " + example.getSentence().getWords());
 				if (parse != null) {
 					int correct = 0; 
 					String lf = null;									//Expression2 lf = null;
@@ -53,14 +58,27 @@ public class DiscourseParsingUtils {
 						lf = null;										//lf = Expression2.constant("null");
 					}
 
-					System.out.println("PREDICTED: " + lf);
-					System.out.println("TRUE:      " + correctLf);
+					if(Decoder.verbose) System.out.println("PREDICTED: " + lf);
+					if(Decoder.verbose) System.out.println("TRUE:      " + correctLf);
 					//System.out.println("DEPS: " + parse.getAllDependencies());
-					System.out.println("CORRECT: " + correct);
-					System.out.println("IS_TRUE: " + parse.isTrueParse());
+					if(Decoder.verbose) System.out.println("CORRECT: " + correct);
+					if(Decoder.verbose) System.out.println("IS_TRUE: " + parse.isTrueParse());
 
 					numCorrect += correct;
 					numParsed++;
+					
+					if(couldDerive){
+						if(correct==1){
+							numCorrectDerived++;
+						}
+						numDerived++;
+					}else{
+						if(correct==1){
+							numCorrectUnderived++;
+						}
+						numUnderived++;
+					}
+					
 				} else {
 					System.out.println("NO PARSE");
 				}
@@ -71,9 +89,12 @@ public class DiscourseParsingUtils {
 		double recall = ((double) numCorrect) / counter;
 		System.out.println("\nPrecision: " + precision);
 		System.out.println("Recall: " + recall);
+		System.out.println("Accuracy(derived): "+((double) numCorrectDerived) / numDerived);
+		System.out.println("Accuracy(underived): "+((double) numCorrectUnderived) / numUnderived);
 
 		return;
 	}
+	
 
 	public static void testSemanticParser(List<CcgExample> testExamples, CcgParser parser,
 			CcgInference inferenceAlg, ExpressionSimplifier simplifier, ExpressionComparator comparator) {
@@ -115,6 +136,27 @@ public class DiscourseParsingUtils {
 		System.out.println("\nPrecision: " + precision);
 		System.out.println("Recall: " + recall);
 
+		return;
+	}
+	
+	public static void testTotalRecall(List<CcgExample> testExamples, CcgParser parser,
+			CcgInference inferenceAlg, ExpressionSimplifier simplifier, ExpressionComparator comparator) {
+		int numCorrect = 0;
+		int numParsed = 0;
+
+		LogFunction log = new NullLogFunction();
+		for (CcgExample example : testExamples) {			
+			List<CcgParse> parses = parser.beamSearch(example.getSentence(), 200);
+			List<CcgParse> correctParses = PerceptronUtils.filterParsesByLogicalForm(example.getLogicalForm(), ParsingUtils.comparator, parses, true);
+			int correct = (correctParses.size() > 0) ? 1:0;
+			numCorrect += correct;
+			numParsed++;
+		}
+
+		double precision = ((double) numCorrect) / numParsed;
+		double recall = ((double) numCorrect) / testExamples.size();
+		System.out.println("\nPrecision: " + precision);
+		System.out.println("Recall: " + recall);
 		return;
 	}
 }
