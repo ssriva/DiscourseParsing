@@ -67,10 +67,9 @@ public class TestingStructuredCcgParser {
 		discourseParser.trainWeights(numIters, beamSize, maxLogicalForms);
 		
 		//Evaluate discourse parser
-		String testDirectory = "/Users/shashans/Work/DialogueData/dialogues/tabseparated/test/";
-		//DiscourseParsingUtils.testDiscourseParser(discourseParser.getNewCcgSequences(testDirectory), discourseParser, beamSize, maxLogicalForms, simplifier, comparator);
 		DiscourseParsingUtils.testDiscourseParser(discourseParser.ccgExamples, discourseParser, beamSize, maxLogicalForms, simplifier, comparator);
-		DiscourseParsingUtils.testDiscourseParser(discourseParser.getNewCcgSequences(testDirectory), discourseParser, beamSize, maxLogicalForms, simplifier, comparator);
+		//String testDirectory = "/Users/shashans/Work/DialogueData/dialogues/tabseparated/test/";
+		//DiscourseParsingUtils.testDiscourseParser(discourseParser.getNewCcgSequences(testDirectory), discourseParser, beamSize, maxLogicalForms, simplifier, comparator);
 		//System.exit(0);
 		
 		//Save model	
