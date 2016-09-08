@@ -57,7 +57,7 @@ public class Decoder {
 			
 			for(int j=0; j<parses.size(); j++){
 				if(!hs.contains(ParsingUtils.simplify(parses.get(j))) ){
-					if(ParsingUtils.simplify(parses.get(j)).startsWith("(lambda") || ParsingUtils.simplify(parses.get(j)).startsWith("(string") || ParsingUtils.simplify(parses.get(j)).startsWith("**skip") ){ continue; }
+					if(distinctParsesForSentence.size()>0 && (ParsingUtils.simplify(parses.get(j)).startsWith("(lambda") || ParsingUtils.simplify(parses.get(j)).startsWith("(string") || ParsingUtils.simplify(parses.get(j)).startsWith("**skip")) ){ continue; }
 					
 					if(verbose) System.out.println("DISTINCT PARSE:\t"+ParsingUtils.simplify(parses.get(j))+" for sentence: "+sequence.get(i).getSentence());
 					hs.add(ParsingUtils.simplify(parses.get(j)));
