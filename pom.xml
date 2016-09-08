@@ -3,10 +3,64 @@
   <groupId>DiscourseParsing</groupId>
   <artifactId>DiscourseParsing</artifactId>
   <version>0.0.1-SNAPSHOT</version>
+  
+
+	<dependencies>
+		<dependency>
+		    <groupId>com.google.guava</groupId>
+		    <artifactId>guava</artifactId>
+		    <version>13.0.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.opennlp</groupId>
+			<artifactId>opennlp-tools</artifactId>
+			<version>1.6.0</version>
+		</dependency>
+		<dependency>
+		    <groupId>edu.stanford.nlp</groupId>
+		    <artifactId>stanford-corenlp</artifactId>
+		    <version>3.5.2</version>
+		</dependency>
+		<dependency>
+   		   <groupId>com.fasterxml.jackson.core</groupId>
+		   <artifactId>jackson-core</artifactId>
+		   <version>2.2.3</version>
+		 </dependency>
+		
+		<dependency>
+		    <groupId>org.json</groupId>
+		    <artifactId>json</artifactId>
+		    <version>20131018</version>
+		</dependency>
+                <dependency>
+                   <groupId>com.fasterxml.jackson.core</groupId>
+                   <artifactId>jackson-annotations</artifactId>
+                   <version>2.2.3</version>
+                 </dependency>
+                <dependency>
+                   <groupId>com.fasterxml.jackson.core</groupId>
+                   <artifactId>jackson-databind</artifactId>
+                   <version>2.2.3</version>
+                 </dependency>
+      		<dependency>
+			<groupId>com.example</groupId>
+      			<artifactId>instructable-20160419</artifactId>
+      			<version>1.0</version>
+    		</dependency>
+
+		<dependency>
+                        <groupId>com.example</groupId>
+                        <artifactId>jklol-20150707</artifactId>
+                        <version>1.0</version>
+                </dependency>
+
+	</dependencies>
+
   <build>
     <sourceDirectory>src</sourceDirectory>
     <plugins>
       <plugin>
+	<groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.1</version>
         <configuration>
