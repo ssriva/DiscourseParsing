@@ -113,7 +113,7 @@ public class Decoder {
 			}*/
 			
 			//S3: Prob
-			/**/
+			/*
 			if(i>0){
 				List<String> highestProb = new ArrayList<String>();
 				for(int j=0;j<parseLists.get(i-1).size();j++){
@@ -125,7 +125,7 @@ public class Decoder {
 				}
 				//List<String> highestProb = discourseParser.dataStatistics.bestProbSuccessors.get(ParsingUtils.simplify(sequence.get(i-1)));
 				if(highestProb!=null){
-					System.out.println("highestProb is NOT NULL");
+					if(Decoder.verbose) System.out.println("Highest Prob is NOT NULL");
 					for(int c=0; c<Math.min(highestProb.size(), 10); c++){
 						String str = highestProb.get(c);
 						if(!hs_best.contains(str)){
@@ -134,12 +134,48 @@ public class Decoder {
 						}
 					}
 				}else{
-					System.out.println("highestProb is NULL");
+					System.out.println("Highest Prob is NULL");
 				}
 			}
-			/**/
+			*/
+			
+			/*
+			if(i>0){
+				List<String> highestPMI = discourseParser.dataStatistics.bestProbSuccessors.get(ParsingUtils.simplify(parseLists.get(i-1).get(0)));
+				for(int c=0; c<Math.min(highestPMI.size(), 10); c++){
+					String str = highestPMI.get(c);
+					if(!hs_best.contains(str)){
+						candidateParsesList.get(i).add(new CcgParseWrapper(str));
+						hs_best.add(str);
+					}
+				}
+			}*/
 			
 			//S4: PMI
+			if(i>0){
+				List<String> highestPMI = new ArrayList<String>();
+				for(int j=0;j<parseLists.get(i-1).size();j++){
+					List<String>candidates = discourseParser.dataStatistics.bestPMISuccessors.get(ParsingUtils.simplify(parseLists.get(i-1).get(j)));
+					if(candidates!=null){
+						highestPMI.addAll(candidates);
+						break;
+					}
+				}
+				//List<String> highestProb = discourseParser.dataStatistics.bestProbSuccessors.get(ParsingUtils.simplify(sequence.get(i-1)));
+				if(highestPMI.size()>0){
+					if(Decoder.verbose) System.out.println("Highest PMI is NOT NULL");
+					for(int c=0; c<Math.min(highestPMI.size(), 10); c++){
+						String str = highestPMI.get(c);
+						if(!hs_best.contains(str)){
+							candidateParsesList.get(i).add(new CcgParseWrapper(str));
+							hs_best.add(str);
+						}
+					}
+				}else{
+					System.out.println("Highest PMI is NULL");
+				}
+			}
+			
 			/*
 			if(i>0){
 				List<String> highestPMI = discourseParser.dataStatistics.bestPMISuccessors.get(ParsingUtils.simplify(parseLists.get(i-1).get(0)));
