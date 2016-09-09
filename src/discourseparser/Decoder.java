@@ -113,9 +113,10 @@ public class Decoder {
 			}*/
 			
 			//S3: Prob
-			/*
+			/**/
 			if(i>0){
-				List<String> highestProb = discourseParser.dataStatistics.bestProbSuccessors.get(ParsingUtils.simplify(sequence.get(i-1)));
+				List<String> highestProb = discourseParser.dataStatistics.bestProbSuccessors.get(ParsingUtils.simplify(parseLists.get(i-1).get(0)));
+				//List<String> highestProb = discourseParser.dataStatistics.bestProbSuccessors.get(ParsingUtils.simplify(sequence.get(i-1)));
 				for(int c=0; c<Math.min(highestProb.size(), 10); c++){
 					String str = highestProb.get(c);
 					if(!hs_best.contains(str)){
@@ -124,11 +125,12 @@ public class Decoder {
 					}
 				}
 			}
-			*/
+			/**/
 			
 			//S4: PMI
+			/*
 			if(i>0){
-				List<String> highestPMI = discourseParser.dataStatistics.bestPMISuccessors.get(ParsingUtils.simplify(sequence.get(i-1)));
+				List<String> highestPMI = discourseParser.dataStatistics.bestPMISuccessors.get(ParsingUtils.simplify(parseLists.get(i-1).get(0)));
 				for(int c=0; c<Math.min(highestPMI.size(), 10); c++){
 					String str = highestPMI.get(c);
 					if(!hs_best.contains(str)){
@@ -136,7 +138,7 @@ public class Decoder {
 						hs_best.add(str);
 					}
 				}
-			}
+			}*/
 						
 			if(verbose) System.out.println("SZDIST: "+candidateParsesList.get(0).size());
 			
