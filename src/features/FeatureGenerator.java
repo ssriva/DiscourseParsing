@@ -181,7 +181,7 @@ public class FeatureGenerator {
 				count++;
 			}
 		}
-		double precision = (count>0) ? (1.0*matchedpred)/count : 0;
+		double precision = (count>0) ? (1.0*matchedpred)/count : 0.0;
 		
 		//Of all predicates in logical form, how many could be matched with words in sentence (recall)
 		Set<String> intersection = new HashSet<String>(observedLogicalPredicates);
@@ -205,8 +205,10 @@ public class FeatureGenerator {
 		
 		for(String entity:entities){
 			if( ( observedLogicalPredicates.contains(entity) && !firingPredicates.contains(entity))
-			|| (!observedLogicalPredicates.contains(entity) && firingPredicates.contains(entity))
-					){ System.out.println("Veto candidate because of missing entity:"+entity+"!");; return 0.0;}
+			|| (!observedLogicalPredicates.contains(entity) && firingPredicates.contains(entity))){ 
+				if(Decoder.verbose) System.out.println("Veto candidate because of missing entity:"+entity+"!"); 
+				return 0.0;
+			}
 		}
 		return fm;
 	}
