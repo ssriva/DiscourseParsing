@@ -84,7 +84,7 @@ public class Decoder {
 			candidateParsesList.get(i).addAll(distinctParsesForSentence);	//Add original parser beam
 			Preconditions.checkState(distinctParsesForSentence.size()>0, "No distinct parses found for sentence: "+sequence.get(i).getSentence()+" with "+parses.size()+" parses: "+parses);
 
-			//Oracle expansion, if not already present, add true logical form and 9 others as assigned candidate logical forms
+			//S1: Oracle expansion, if not already present, add true logical form and 9 others as assigned candidate logical forms
 			
 			/*
 			if(!hs_best.contains(ParsingUtils.simplify(sequence.get(i)))){
@@ -102,7 +102,7 @@ public class Decoder {
 			*/
 			
 			
-			//Training set expansion: add most common candidates from training set
+			//S2: Training set expansion: add most common candidates from training set
 			/*
 			for(int c=0; c<15; c++){
 				String str = discourseParser.dataStatistics.mostCommon.get(c);
@@ -112,11 +112,25 @@ public class Decoder {
 				}
 			}*/
 			
-			//PMI
+			//S3: Prob
+			/*
 			if(i>0){
 				List<String> highestProb = discourseParser.dataStatistics.bestProbSuccessors.get(ParsingUtils.simplify(sequence.get(i-1)));
 				for(int c=0; c<Math.min(highestProb.size(), 10); c++){
 					String str = highestProb.get(c);
+					if(!hs_best.contains(str)){
+						candidateParsesList.get(i).add(new CcgParseWrapper(str));
+						hs_best.add(str);
+					}
+				}
+			}
+			*/
+			
+			//S4: PMI
+			if(i>0){
+				List<String> highestPMI = discourseParser.dataStatistics.bestPMISuccessors.get(ParsingUtils.simplify(sequence.get(i-1)));
+				for(int c=0; c<Math.min(highestPMI.size(), 10); c++){
+					String str = highestPMI.get(c);
 					if(!hs_best.contains(str)){
 						candidateParsesList.get(i).add(new CcgParseWrapper(str));
 						hs_best.add(str);
