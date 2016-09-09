@@ -86,7 +86,7 @@ public class Decoder {
 
 			//Oracle expansion, if not already present, add true logical form and 9 others as assigned candidate logical forms
 			
-			/**/
+			/*
 			if(!hs_best.contains(ParsingUtils.simplify(sequence.get(i)))){
 				candidateParsesList.get(i).add( new CcgParseWrapper(ParsingUtils.simplify(sequence.get(i))) );
 				hs_best.add(ParsingUtils.simplify(sequence.get(i)));
@@ -99,18 +99,18 @@ public class Decoder {
 					hs_best.add(str);
 				}
 			}
-			/**/
+			*/
 			
 			
 			//Training set expansion: add most common candidates from training set
-			/*
+			/**/
 			for(int c=0; c<15; c++){
 				String str = discourseParser.dataStatistics.mostCommon.get(c);
 				if(!hs_best.contains(str)){
 					candidateParsesList.get(i).add(new CcgParseWrapper(str));
 					hs_best.add(str);
 				}
-			}*/
+			}/**/
 						
 			if(verbose) System.out.println("SZDIST: "+candidateParsesList.get(0).size());
 			
