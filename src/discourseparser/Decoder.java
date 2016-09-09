@@ -110,11 +110,11 @@ public class Decoder {
 				if(!hs_best.contains(str) ){
 					double fm = features.FeatureGenerator.getLogicalFormsOverlap(str, String.join(" ", sequence.get(i).getSentence().getWords()));
 					if(fm>=0.4){
-						System.out.println("fmeasure GOOD "+fm);
+						if(Decoder.verbose) System.out.println("fmeasure GOOD "+fm);
 						candidateParsesList.get(i).add(new CcgParseWrapper(str));
 						hs_best.add(str);
 					}else{
-						System.out.println("fmeasure BAD "+fm);
+						if(Decoder.verbose) System.out.println("fmeasure BAD "+fm);
 					}
 				}
 			}/**/

@@ -189,7 +189,25 @@ public class FeatureGenerator {
 		double recall = (1.0 * intersection.size()/observedLogicalPredicates.size());
 		
 		double fm = (precision+recall > 0.0) ? 2*precision*recall/(precision+recall):0;
-		System.out.println("Match of sentence: "+sentence+" with logical form: "+candidateLogicalForm+" is: "+count+ " p: "+precision+" r: "+recall+" fmeasure:"+fm);
+		if(Decoder.verbose) System.out.println("Match of sentence: "+sentence+" with logical form: "+candidateLogicalForm+" is: "+count+ " p: "+precision+" r: "+recall+" fmeasure:"+fm);
+		
+		String[] entities = {"alex",
+				"charlie",
+				"mom",
+				"aaron",
+				"alextimetowork@myworkplace.com",
+				"charlieisasleep4@myworkplace.com",
+				"momthebest7@bestforyou.com",
+				"momsthebest7@bestemailforall.com",
+				"aaronworkshard3@myworkplace.com",
+				"caseyousoon8@myworkplace.com"
+				};
+		
+		for(String entity:entities){
+			if( ( observedLogicalPredicates.contains(entity) && !firingPredicates.contains(entity))
+			|| (!observedLogicalPredicates.contains(entity) && firingPredicates.contains(entity))
+					){ System.out.println("Veto candidate because of missing entity:"+entity+"!");; return 0.0;}
+		}
 		return fm;
 	}
 }
