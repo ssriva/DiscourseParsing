@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import utils.CcgParseWrapper;
@@ -17,9 +18,10 @@ import utils.CcgParseWrapper;
 public class FeatureGenerator {
 
 	public static List<String> logicalVocab; 
+	public static HashMap<String,Set<String>> invokedLogicalPredicates;
 	static{
 		try {
-			logicalVocab = Files.readAllLines(Paths.get("data/actions.txt")).stream().map(s -> s.trim()).filter(s -> s.length()>0).collect(Collectors.toList());
+			logicalVocab = Files.readAllLines(Paths.get("data/actions.txt")).stream().map(s -> s.trim()).filter(s -> s.length()>0).collect(Collectors.toList());		
 		} catch (IOException e) {e.printStackTrace();}
 	}
 	
