@@ -118,7 +118,7 @@ public class Decoder {
 				List<String> highestProb = new ArrayList<String>();
 				for(int j=0;j<parseLists.get(i-1).size();j++){
 					List<String>candidates = discourseParser.dataStatistics.bestProbSuccessors.get(ParsingUtils.simplify(parseLists.get(i-1).get(j)));
-					if(candidates.size() > 0){
+					if(candidates!=null && candidates.size() > 0){
 						highestProb.addAll(candidates);
 						break;
 					}
