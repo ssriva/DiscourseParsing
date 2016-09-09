@@ -8,6 +8,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -18,10 +19,15 @@ import utils.CcgParseWrapper;
 public class FeatureGenerator {
 
 	public static List<String> logicalVocab; 
-	public static HashMap<String,Set<String>> invokedLogicalPredicates;
+	public static HashMap<String,Set<String>> invokedLogicalPredicates = new HashMap<String, Set<String>>();
 	static{
 		try {
-			logicalVocab = Files.readAllLines(Paths.get("data/actions.txt")).stream().map(s -> s.trim()).filter(s -> s.length()>0).collect(Collectors.toList());		
+			logicalVocab = Files.readAllLines(Paths.get("data/actions.txt")).stream().map(s -> s.trim()).filter(s -> s.length()>0).collect(Collectors.toList());
+			for(String line:Files.readAllLines(Paths.get("data/allAssociationRules.txt"))){
+				String[] toks = line.split("\t");
+				String word = toks[0].trim();
+				invokedLogicalPredicates.put(word, new HashSet<String>(Arrays.asList(toks[1].split(" "))));
+			}
 		} catch (IOException e) {e.printStackTrace();}
 	}
 	
@@ -44,7 +50,27 @@ public class FeatureGenerator {
 			for(String matchedPred : logicalVocab.stream().filter(s -> Arrays.asList(prevLogicalForm.split("[()\\s]+")).contains(s)).collect(Collectors.toSet())){
 				featureVec.add(genKey("Zi",state,"Li-1",matchedPred));
 			}
+		}else{
+			System.err.println("Shouldn't be here");
+			System.exit(-1);
 		}
+		
+		//Lexical matching
+		/**/
+		if(index!=sequence.size()+1){
+			String sentence  = String.join(" ", sequence.get(index-1).getSentence().getWords());
+			for(String phrase:invokedLogicalPredicates.keySet()){
+				if(sentence.contains(phrase)){
+					Set<String> intersection = new HashSet<String>(invokedLogicalPredicates.get(phrase));
+					intersection.retainAll(logicalVocab.stream().filter(s -> Arrays.asList(curLogicalForm.split("[()\\s]+")).contains(s)).collect(Collectors.toSet()));
+					for(String matchedLogicalPredicate:intersection){
+						featureVec.add(genKey("Lex_Wi",phrase,"Li",matchedLogicalPredicate));
+						//System.out.println("ADDING "+genKey("Lex_Wi",phrase,"Li",matchedLogicalPredicate));
+					}
+				}
+			}
+		}
+		/**/
 		
 		//Add emission features for complete logical forms
 		featureVec.add(genKey("Zi",state,"Li",curLogicalForm));
