@@ -23,6 +23,7 @@ import com.jayantkrish.jklol.ccg.CcgParser;
 import com.jayantkrish.jklol.ccg.lambda2.ExpressionComparator;
 import com.jayantkrish.jklol.ccg.lambda2.ExpressionSimplifier;
 import com.jayantkrish.jklol.ccg.lambda2.SimplificationComparator;
+import com.jayantkrish.jklol.preprocessing.FeatureGenerator;
 
 public class Decoder {
 
@@ -104,11 +105,17 @@ public class Decoder {
 			
 			//S2: Training set expansion: add most common candidates from training set
 			/**/
-			for(int c=0; c<15; c++){
+			for(int c=0; c<40; c++){
 				String str = discourseParser.dataStatistics.mostCommon.get(c);
-				if(!hs_best.contains(str)){
-					candidateParsesList.get(i).add(new CcgParseWrapper(str));
-					hs_best.add(str);
+				if(!hs_best.contains(str) ){
+					double fm = features.FeatureGenerator.getLogicalFormsOverlap(str, String.join(" ", sequence.get(i).getSentence().getWords()));
+					if(fm>=0.4){
+						System.out.println("fmeasure GOOD "+fm);
+						candidateParsesList.get(i).add(new CcgParseWrapper(str));
+						hs_best.add(str);
+					}else{
+						System.out.println("fmeasure BAD "+fm);
+					}
 				}
 			}/**/
 			

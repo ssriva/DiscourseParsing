@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import discourseparser.Decoder;
 import utils.CcgParseWrapper;
 
 
@@ -161,5 +162,34 @@ public class FeatureGenerator {
 			}
 		}
 		return hmap;
+	}
+	
+	public static double getLogicalFormsOverlap(String candidateLogicalForm, String sentence){
+		int count = 0, matchedpred = 0;
+		
+		Set<String> observedLogicalPredicates = logicalVocab.stream().filter(s -> Arrays.asList(candidateLogicalForm.split("[()\\s]+")).contains(s)).collect(Collectors.toSet());
+		Set<String> firingPredicates = new HashSet<String>();
+		
+		//Of matching phrases in sentence, how many match with actual logical form (precision)
+		for(String phrase:invokedLogicalPredicates.keySet()){
+			if(sentence.contains(phrase)){
+				firingPredicates.addAll(invokedLogicalPredicates.get(phrase));
+				
+				Set<String> intersection = new HashSet<String>(invokedLogicalPredicates.get(phrase));
+				intersection.retainAll(observedLogicalPredicates);
+				matchedpred += ((intersection.size() > 0 ) ? 1:0);
+				count++;
+			}
+		}
+		double precision = (count>0) ? (1.0*matchedpred)/count : 0;
+		
+		//Of all predicates in logical form, how many could be matched with words in sentence (recall)
+		Set<String> intersection = new HashSet<String>(observedLogicalPredicates);
+		intersection.retainAll(firingPredicates);
+		double recall = (1.0 * intersection.size()/observedLogicalPredicates.size());
+		
+		double fm = (precision+recall > 0.0) ? 2*precision*recall/(precision+recall):0;
+		System.out.println("Match of sentence: "+sentence+" with logical form: "+candidateLogicalForm+" is: "+count+ " p: "+precision+" r: "+recall+" fmeasure:"+fm);
+		return fm;
 	}
 }
