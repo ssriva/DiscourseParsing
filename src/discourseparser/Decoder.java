@@ -113,7 +113,7 @@ public class Decoder {
 			}*/
 			
 			//S3: Prob
-			/**/
+			/*
 			if(i>0){
 				List<String> highestProb = new ArrayList<String>();
 				for(int j=0;j<parseLists.get(i-1).size();j++){
@@ -137,7 +137,7 @@ public class Decoder {
 					System.out.println("Highest Prob is NULL");
 				}
 			}
-			/**/
+			*/
 			
 			/*
 			if(i>0){
@@ -152,12 +152,12 @@ public class Decoder {
 			}*/
 			
 			//S4: PMI
-			/*
+			/**/
 			if(i>0){
 				List<String> highestPMI = new ArrayList<String>();
 				for(int j=0;j<parseLists.get(i-1).size();j++){
 					List<String>candidates = discourseParser.dataStatistics.bestPMISuccessors.get(ParsingUtils.simplify(parseLists.get(i-1).get(j)));
-					if(candidates.size() > 0){
+					if(candidates!=null && candidates.size() > 0){
 						highestPMI.addAll(candidates);
 						break;
 					}
@@ -175,7 +175,7 @@ public class Decoder {
 				}else{
 					System.out.println("Highest PMI is NULL");
 				}
-			}*/
+			}/**/
 			
 			/*
 			if(i>0){
