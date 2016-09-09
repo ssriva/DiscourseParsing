@@ -87,7 +87,7 @@ public class DiscourseParsingUtils {
 
 		double precision = ((double) numCorrect) / numParsed;
 		double recall = ((double) numCorrect) / counter;
-		System.out.println("\nPrecision: " + precision);
+		System.out.println("\nTotal Accuracy: " + precision);
 		System.out.println("Recall: " + recall);
 		System.out.println("Accuracy(derived): "+((double) numCorrectDerived) / numDerived);
 		System.out.println("Accuracy(underived): "+((double) numCorrectUnderived) / numUnderived);
