@@ -103,14 +103,14 @@ public class Decoder {
 			
 			
 			//S2: Training set expansion: add most common candidates from training set
-			/*
+			/**/
 			for(int c=0; c<15; c++){
 				String str = discourseParser.dataStatistics.mostCommon.get(c);
 				if(!hs_best.contains(str)){
 					candidateParsesList.get(i).add(new CcgParseWrapper(str));
 					hs_best.add(str);
 				}
-			}*/
+			}/**/
 			
 			//S3: Prob
 			/*
@@ -152,7 +152,7 @@ public class Decoder {
 			}*/
 			
 			//S4: PMI
-			/**/
+			/*
 			if(i>0){
 				List<String> highestPMI = new ArrayList<String>();
 				for(int j=0;j<parseLists.get(i-1).size();j++){
@@ -175,7 +175,7 @@ public class Decoder {
 				}else{
 					System.out.println("Highest PMI is NULL");
 				}
-			}/**/
+			}*/
 			
 			/*
 			if(i>0){
