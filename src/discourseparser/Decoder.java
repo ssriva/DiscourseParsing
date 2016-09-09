@@ -103,14 +103,26 @@ public class Decoder {
 			
 			
 			//Training set expansion: add most common candidates from training set
-			/**/
+			/*
 			for(int c=0; c<15; c++){
 				String str = discourseParser.dataStatistics.mostCommon.get(c);
 				if(!hs_best.contains(str)){
 					candidateParsesList.get(i).add(new CcgParseWrapper(str));
 					hs_best.add(str);
 				}
-			}/**/
+			}*/
+			
+			//PMI
+			if(i>0){
+				List<String> highestProb = discourseParser.dataStatistics.bestProbSuccessors.get(ParsingUtils.simplify(sequence.get(i-1)));
+				for(int c=0; c<Math.min(highestProb.size(), 10); c++){
+					String str = highestProb.get(c);
+					if(!hs_best.contains(str)){
+						candidateParsesList.get(i).add(new CcgParseWrapper(str));
+						hs_best.add(str);
+					}
+				}
+			}
 						
 			if(verbose) System.out.println("SZDIST: "+candidateParsesList.get(0).size());
 			
