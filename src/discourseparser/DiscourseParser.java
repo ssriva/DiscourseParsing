@@ -163,9 +163,9 @@ public class DiscourseParser implements Serializable {
 					if(bestPredictedSequenceParse.parses.get(i).isTrueParse() && bestCorrectSequenceParse.parses.get(i).isTrueParse() ){
 						parserFamily.incrementSufficientStatistics(gradient, parserParameters, example.getSentence(), bestPredictedSequenceParse.parses.get(i).getCcgParse(), -1.0 * Math.abs(example.getWeight()));
 						parserFamily.incrementSufficientStatistics(gradient, parserParameters, example.getSentence(), bestCorrectSequenceParse.parses.get(i).getCcgParse(), 1.0 * Math.abs(example.getWeight()));
-						System.out.println("TYPE 5: good");
+						if(Decoder.verbose) System.out.println("TYPE 5: good");
 					}else{
-						System.out.println("TYPE 6: bad");
+						if(Decoder.verbose) System.out.println("TYPE 6: bad");
 					}
 					
 					/*
