@@ -115,7 +115,14 @@ public class Decoder {
 			//S3: Prob
 			/**/
 			if(i>0){
-				List<String> highestProb = discourseParser.dataStatistics.bestProbSuccessors.get(ParsingUtils.simplify(parseLists.get(i-1).get(0)));
+				List<String> highestProb = new ArrayList<String>();
+				for(int j=0;j<parseLists.get(i-1).size();j++){
+					List<String>candidates = discourseParser.dataStatistics.bestProbSuccessors.get(ParsingUtils.simplify(parseLists.get(i-1).get(j)));
+					if(candidates!=null){
+						highestProb.addAll(candidates);
+						break;
+					}
+				}
 				//List<String> highestProb = discourseParser.dataStatistics.bestProbSuccessors.get(ParsingUtils.simplify(sequence.get(i-1)));
 				if(highestProb!=null){
 					System.out.println("highestProb is NOT NULL");
