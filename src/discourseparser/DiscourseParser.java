@@ -112,25 +112,31 @@ public class DiscourseParser implements Serializable {
 			
 			int epochCorrect = 0, epochCounter = 0;
 
-			for(List<WeightedCcgExample>sequence:shuffledSequences){
-				//Update on single sequence
-				//List<WeightedCcgExample> shuffledExamples = new LinkedList<WeightedCcgExample>(sequence);
-				//Collections.shuffle(shuffledExamples); parserParameters = PerceptronUtils.updateOnGivenExamples(parserFamily, parserParameters, shuffledExamples, iter);
+			for(List<WeightedCcgExample>sequenceExample:shuffledSequences){
 
-				/*Begin update on sequence*/	
-				SequenceParse bestPredictedSequenceParse = Decoder.decode(sequence, this, beamSize, maxLog, false);
-				SequenceParse bestCorrectSequenceParse = Decoder.decode(sequence, this, beamSize, maxLog, true);
+				List<List<WeightedCcgExample>>partitions = Lists.partition(sequenceExample, Decoder.breakSequences ? Decoder.subsequenceSize:sequenceExample.size());
+				//Collections.shuffle(partitions);
 				
-				
-				//Accumulated Batch update for parser parameters
-				System.out.println("Making parser updates");
-				SufficientStatistics gradient = parserFamily.getNewSufficientStatistics();
-				for(int i=0; i<sequence.size();i++){
-					
-					if(Decoder.verbose) System.out.println("ITER"+(counter++)); //(iter+i));
-					WeightedCcgExample example = sequence.get(i);
-					
-					/*
+				for(List<WeightedCcgExample>sequence:partitions){
+
+					//Update on single sequence
+					//List<WeightedCcgExample> shuffledExamples = new LinkedList<WeightedCcgExample>(sequence);
+					//Collections.shuffle(shuffledExamples); parserParameters = PerceptronUtils.updateOnGivenExamples(parserFamily, parserParameters, shuffledExamples, iter);
+
+					/*Begin update on sequence*/	
+					SequenceParse bestPredictedSequenceParse = Decoder.decode(sequence, this, beamSize, maxLog, false);
+					SequenceParse bestCorrectSequenceParse = Decoder.decode(sequence, this, beamSize, maxLog, true);
+
+
+					//Accumulated Batch update for parser parameters
+					System.out.println("Making parser updates");
+					SufficientStatistics gradient = parserFamily.getNewSufficientStatistics();
+					for(int i=0; i<sequence.size();i++){
+
+						if(Decoder.verbose) System.out.println("ITER"+(counter++)); //(iter+i));
+						WeightedCcgExample example = sequence.get(i);
+
+						/*
 					List<CcgParse> parses = this.parser.beamSearch(example.getSentence(), 200);
 					if (parses.size() == 0) { continue;}
 					CcgParse bestPredictedParse = parses.get(0);
@@ -146,9 +152,9 @@ public class DiscourseParser implements Serializable {
 					if(true){
 						continue;
 					}
-					*/
-					
-					/*
+						 */
+
+						/*
 					if (bestCorrectSequenceParse.parses.get(i) == null) {
 					      //Earlier: If no correct parses in candidates, do not learn parserParams on this example.
 					      System.out.println("Search error (Correct): " + example.getSentence() + " " + example.getLogicalForm());
@@ -157,70 +163,72 @@ public class DiscourseParser implements Serializable {
 					}
 					parserFamily.incrementSufficientStatistics(gradient, parserParameters, example.getSentence(), bestPredictedSequenceParse.parses.get(i), -1.0 * Math.abs(example.getWeight()));
 					parserFamily.incrementSufficientStatistics(gradient, parserParameters, example.getSentence(), bestCorrectSequenceParse.parses.get(i), 1.0 * Math.abs(example.getWeight()));
-					*/
-					
-					
-					if(bestPredictedSequenceParse.parses.get(i).isTrueParse() && bestCorrectSequenceParse.parses.get(i).isTrueParse() ){
-						parserFamily.incrementSufficientStatistics(gradient, parserParameters, example.getSentence(), bestPredictedSequenceParse.parses.get(i).getCcgParse(), -1.0 * Math.abs(example.getWeight()));
-						parserFamily.incrementSufficientStatistics(gradient, parserParameters, example.getSentence(), bestCorrectSequenceParse.parses.get(i).getCcgParse(), 1.0 * Math.abs(example.getWeight()));
-						if(Decoder.verbose) System.out.println("TYPE 5: good");
-					}else{
-						if(Decoder.verbose) System.out.println("TYPE 6: bad");
-					}
-					
-					/*
+						 */
+
+
+						if(bestPredictedSequenceParse.parses.get(i).isTrueParse() && bestCorrectSequenceParse.parses.get(i).isTrueParse() ){
+							parserFamily.incrementSufficientStatistics(gradient, parserParameters, example.getSentence(), bestPredictedSequenceParse.parses.get(i).getCcgParse(), -1.0 * Math.abs(example.getWeight()));
+							parserFamily.incrementSufficientStatistics(gradient, parserParameters, example.getSentence(), bestCorrectSequenceParse.parses.get(i).getCcgParse(), 1.0 * Math.abs(example.getWeight()));
+							if(Decoder.verbose) System.out.println("TYPE 5: good");
+						}else{
+							if(Decoder.verbose) System.out.println("TYPE 6: bad");
+						}
+
+						/*
 					if(bestPredictedSequenceParse.parses.get(i).isTrueParse()){
 						parserFamily.incrementSufficientStatistics(gradient, parserParameters, example.getSentence(), bestPredictedSequenceParse.parses.get(i).getCcgParse(), -1.0 * Math.abs(example.getWeight()));
 					}
 					if(bestCorrectSequenceParse.parses.get(i).isTrueParse()){
 						parserFamily.incrementSufficientStatistics(gradient, parserParameters, example.getSentence(), bestCorrectSequenceParse.parses.get(i).getCcgParse(), 1.0 * Math.abs(example.getWeight()));
 					}	
-					
+
 					if(bestPredictedSequenceParse.parses.get(i).isTrueParse() && bestCorrectSequenceParse.parses.get(i).isTrueParse()){	System.out.println("TYPE 1: good");}
 					if(!bestPredictedSequenceParse.parses.get(i).isTrueParse() && !bestCorrectSequenceParse.parses.get(i).isTrueParse()){System.out.println("TYPE 2: both fail");}
 					if(bestPredictedSequenceParse.parses.get(i).isTrueParse() && !bestCorrectSequenceParse.parses.get(i).isTrueParse()){System.out.println("TYPE 3: no true parse that is correct");}
 					if(!bestPredictedSequenceParse.parses.get(i).isTrueParse() && bestCorrectSequenceParse.parses.get(i).isTrueParse()){System.out.println("TYPE 4: shouldn't be here");}
-					*/
-					
-					int correct = bestPredictedSequenceParse.parses.get(i).getStringLogicalForm().equals(ParsingUtils.simplify(example)) ? 1 : 0;
-					epochCorrect+=correct;
-					epochCounter++;
-				}
-				double currentStepSize = decayStepSize ? (1.0 / Math.sqrt(iter + 2)) : 1.0;
-				parserParameters.multiply(1.0 - (currentStepSize * l2penalty));
-				parserParameters.increment(gradient, currentStepSize);
-				this.parser = parserFamily.getModelFromParameters(parserParameters);
-				gradient.zeroOut();	
-				
-				//Update for discourse weights
-				Boolean updateDiscourseFeatures = true;
-				if(updateDiscourseFeatures){
-				HashMap<String, Double> featureMapPrediction = FeatureGenerator.getFeatureMap(sequence, bestPredictedSequenceParse.parses, bestPredictedSequenceParse.bestPath);
-				HashMap<String, Double> featureMapCorrect = FeatureGenerator.getFeatureMap(sequence, bestCorrectSequenceParse.parses, bestCorrectSequenceParse.bestPath);
-				
-				HashSet<String> first = new HashSet<String>(featureMapPrediction.keySet());
-				HashSet<String> second = new HashSet<String>(featureMapCorrect.keySet());
-				first.addAll(second);
-				
-				for(String s:first){
-					if(!featureMapCorrect.containsKey(s))
-						featureMapCorrect.put(s, 0.0);
-					if(!featureMapPrediction.containsKey(s))
-						featureMapPrediction.put(s, 0.0);
-					if(!weights.containsKey(s)){
-						weights.put(s, 0.0);
-						//cumulativeweights.put(s, 0.0);
+						 */
+
+						int correct = bestPredictedSequenceParse.parses.get(i).getStringLogicalForm().equals(ParsingUtils.simplify(example)) ? 1 : 0;
+						epochCorrect+=correct;
+						epochCounter++;
 					}
-					
-					weights.put(s, weights.get(s)*(1.0 - (currentStepSize * l2penalty)) );
-					weights.put(s, weights.get(s) + 1.0 * currentStepSize*(featureMapCorrect.get(s) - featureMapPrediction.get(s)) );
-					//cumulativeweights.put(s, cumulativeweights.get(s)+weights.get(s));
-				}
-				}
-				/*End of Update on Sequence*/
-				
+					double currentStepSize = decayStepSize ? (1.0 / Math.sqrt(iter + 2)) : 1.0;
+					parserParameters.multiply(1.0 - (currentStepSize * l2penalty));
+					parserParameters.increment(gradient, currentStepSize);
+					this.parser = parserFamily.getModelFromParameters(parserParameters);
+					gradient.zeroOut();	
+
+					//Update for discourse weights
+					Boolean updateDiscourseFeatures = true;
+					if(updateDiscourseFeatures){
+						HashMap<String, Double> featureMapPrediction = FeatureGenerator.getFeatureMap(sequence, bestPredictedSequenceParse.parses, bestPredictedSequenceParse.bestPath);
+						HashMap<String, Double> featureMapCorrect = FeatureGenerator.getFeatureMap(sequence, bestCorrectSequenceParse.parses, bestCorrectSequenceParse.bestPath);
+
+						HashSet<String> first = new HashSet<String>(featureMapPrediction.keySet());
+						HashSet<String> second = new HashSet<String>(featureMapCorrect.keySet());
+						first.addAll(second);
+
+						for(String s:first){
+							if(!featureMapCorrect.containsKey(s))
+								featureMapCorrect.put(s, 0.0);
+							if(!featureMapPrediction.containsKey(s))
+								featureMapPrediction.put(s, 0.0);
+							if(!weights.containsKey(s)){
+								weights.put(s, 0.0);
+								//cumulativeweights.put(s, 0.0);
+							}
+
+							weights.put(s, weights.get(s)*(1.0 - (currentStepSize * l2penalty)) );
+							weights.put(s, weights.get(s) + 1.0 * currentStepSize*(featureMapCorrect.get(s) - featureMapPrediction.get(s)) );
+							//cumulativeweights.put(s, cumulativeweights.get(s)+weights.get(s));
+						}
+					}
+					/*End of Discourse update on (sub)sequence*/
+
+				} //End of update on subsequence
+
 				iter+=1; //shuffledExamples.size();
-			}
+			} //End of update on sequence
 			System.out.println("TRAINING ACCURACY during ITER"+passIdx+" is:"+((double)epochCorrect)/epochCounter);
 		}
 		SufficientStatistics retVal = ((returnAveragedParameters) ? averagedParameters:parserParameters);

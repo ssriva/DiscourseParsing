@@ -8,6 +8,7 @@ import utils.CcgParseWrapper;
 import utils.ParsingUtils;
 import utils.PerceptronUtils;
 
+import com.google.common.collect.Lists;
 import com.jayantkrish.jklol.ccg.CcgExample;
 import com.jayantkrish.jklol.ccg.CcgInference;
 import com.jayantkrish.jklol.ccg.CcgParse;
@@ -30,8 +31,11 @@ public class DiscourseParsingUtils {
 		
 		int numCorrectDerived = 0 , numCorrectUnderived = 0, numDerived = 0, numUnderived =0;
 
-		for (List<WeightedCcgExample> exampleSequence : testExampleSequences) {
+		for (List<WeightedCcgExample> exampleSequenceLarge : testExampleSequences) {
 
+			List<List<WeightedCcgExample>>partitions = Lists.partition(exampleSequenceLarge, Decoder.breakSequences ? Decoder.subsequenceSize:exampleSequenceLarge.size());
+			for(List<WeightedCcgExample>exampleSequence:partitions){
+			
 			List<CcgParseWrapper> bestPredictedSequenceParse = Decoder.decode(exampleSequence, discourseParser, beamSize, maxLog, false).parses;
 			//CcgParse parse = inferenceAlg.getBestParse(parser, exampleSequence.getSentence(), null, log);
 
@@ -82,6 +86,7 @@ public class DiscourseParsingUtils {
 				} else {
 					System.out.println("NO PARSE");
 				}
+			}
 			}
 		}
 

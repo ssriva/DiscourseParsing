@@ -29,6 +29,9 @@ import com.jayantkrish.jklol.preprocessing.FeatureGenerator;
 public class Decoder {
 
 	public static boolean verbose = false;
+	public static boolean breakSequences = true;
+	public static int subsequenceSize = 5;
+	
 	private static ExpressionSimplifier simplifier = CcgUtils.getExpressionSimplifier();
 	private static ExpressionComparator comparator = new SimplificationComparator(simplifier);
 	
@@ -107,7 +110,7 @@ public class Decoder {
 			
 			
 			//S2: Training set expansion: add most common candidates from training set
-			/*
+			/**/
 			if((new Random()).nextDouble()<=0.0){
 				if(!hs_best.contains(ParsingUtils.simplify(sequence.get(i)))){
 					candidateParsesList.get(i).add( new CcgParseWrapper(ParsingUtils.simplify(sequence.get(i))) );
@@ -134,7 +137,7 @@ public class Decoder {
 				}
 			}
 			System.out.println("Training set expansion added "+numCands+" candidates. Gold: "+hs_best.contains(ParsingUtils.simplify(sequence.get(i))));
-			*/
+			/**/
 			
 			//S3: Prob
 			/*
