@@ -108,7 +108,7 @@ public class Decoder {
 			
 			//S2: Training set expansion: add most common candidates from training set
 			/**/
-			if((new Random()).nextDouble()<=0.4){
+			if((new Random()).nextDouble()<=0.3){
 				if(!hs_best.contains(ParsingUtils.simplify(sequence.get(i)))){
 					candidateParsesList.get(i).add( new CcgParseWrapper(ParsingUtils.simplify(sequence.get(i))) );
 					hs_best.add(ParsingUtils.simplify(sequence.get(i)));
