@@ -113,7 +113,7 @@ public class Decoder {
 			
 			
 			//S2: Training set expansion: add most common candidates from training set
-			/**/
+			/*
 			if((new Random()).nextDouble()<=0.0){
 				if(!hs_best.contains(ParsingUtils.simplify(sequence.get(i)))){
 					candidateParsesList.get(i).add( new CcgParseWrapper(ParsingUtils.simplify(sequence.get(i))) );
@@ -140,10 +140,10 @@ public class Decoder {
 				}
 			}
 			System.out.println("Training set expansion added "+numCands+" candidates. Gold: "+hs_best.contains(ParsingUtils.simplify(sequence.get(i))));
-			/**/
+			*/
 			
 			//S3: Prob
-			/*
+			/**/
 			if(i>0){
 				List<String> highestProb = new ArrayList<String>();
 				for(int j=0;j<parseLists.get(i-1).size();j++){
@@ -156,18 +156,21 @@ public class Decoder {
 				//List<String> highestProb = discourseParser.dataStatistics.bestProbSuccessors.get(ParsingUtils.simplify(sequence.get(i-1)));
 				if(highestProb.size() > 0){
 					System.out.println("Highest Prob is NOT NULL");
-					for(int c=0; c<Math.min(highestProb.size(), 10); c++){
+					for(int c=0; c<Math.min(highestProb.size(), 50); c++){
 						String str = highestProb.get(c);
 						if(!hs_best.contains(str)){
-							candidateParsesList.get(i).add(new CcgParseWrapper(str));
-							hs_best.add(str);
+							double fm = features.FeatureGenerator.getLogicalFormsOverlap(str, String.join(" ", sequence.get(i).getSentence().getWords()));
+							if(fm > 0.3){
+								candidateParsesList.get(i).add(new CcgParseWrapper(str));
+								hs_best.add(str);
+							}
 						}
 					}
 				}else{
 					System.out.println("Highest Prob is NULL");
 				}
 			}
-			*/
+			/**/
 			
 			/*
 			if(i>0){
@@ -195,11 +198,14 @@ public class Decoder {
 				//List<String> highestProb = discourseParser.dataStatistics.bestProbSuccessors.get(ParsingUtils.simplify(sequence.get(i-1)));
 				if(highestPMI.size()>0){
 					System.out.println("Highest PMI is NOT NULL");
-					for(int c=0; c<Math.min(highestPMI.size(), 10); c++){
+					for(int c=0; c<Math.min(highestPMI.size(), 50); c++){
 						String str = highestPMI.get(c);
 						if(!hs_best.contains(str)){
-							candidateParsesList.get(i).add(new CcgParseWrapper(str));
-							hs_best.add(str);
+							double fm = features.FeatureGenerator.getLogicalFormsOverlap(str, String.join(" ", sequence.get(i).getSentence().getWords()));
+							if(fm > 0.3){
+								candidateParsesList.get(i).add(new CcgParseWrapper(str));
+								hs_best.add(str);
+							}
 						}
 					}
 				}else{
