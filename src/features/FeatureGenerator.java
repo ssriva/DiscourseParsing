@@ -170,7 +170,7 @@ public class FeatureGenerator {
 		
 		String key = candidateLogicalForm+"|"+sentence;
 		if(cache.containsKey(key)){
-			System.out.println("Retrieving from cache!!");
+			if(Decoder.verbose) System.out.println("Retrieving from cache!!");
 			return cache.get(key);
 		}
 		
