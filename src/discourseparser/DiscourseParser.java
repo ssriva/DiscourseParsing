@@ -213,7 +213,7 @@ public class DiscourseParser implements Serializable {
 					}
 					
 					weights.put(s, weights.get(s)*(1.0 - (currentStepSize * l2penalty)) );
-					weights.put(s, weights.get(s) + 0.1 * currentStepSize*(featureMapCorrect.get(s) - featureMapPrediction.get(s)) );
+					weights.put(s, weights.get(s) + 1.0 * currentStepSize*(featureMapCorrect.get(s) - featureMapPrediction.get(s)) );
 					//cumulativeweights.put(s, cumulativeweights.get(s)+weights.get(s));
 				}
 				}
