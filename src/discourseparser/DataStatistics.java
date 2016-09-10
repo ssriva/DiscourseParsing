@@ -39,7 +39,7 @@ public class DataStatistics implements Serializable {
 		
 		calculateUnigramBigramCounts(ccgExamples);
 		mostCommon = (ArrayList<String>) unigramCount.entrySet().stream()
-						.sorted( (a,b) -> b.getValue().compareTo(a.getValue())).limit(100)
+						.sorted( (a,b) -> b.getValue().compareTo(a.getValue())).limit(200)
 						.map( e -> e.getKey()).collect(Collectors.toList());
 		
 		calculateBestPMISuccessors();

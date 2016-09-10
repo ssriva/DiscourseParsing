@@ -34,7 +34,7 @@ public class PrintExpansionStrategiesStatistics {
 		System.out.println("Sum of top 15: "+sum);
 		 */
 
-		int lengths[] = {5,10,15,25,50,100};
+		int lengths[] = {5,10,15,25,50,100,200};
 
 		for(int k=0; k<lengths.length; k++){
 			int count = 0, correct = 0;
