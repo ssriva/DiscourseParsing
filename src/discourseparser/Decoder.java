@@ -185,7 +185,7 @@ public class Decoder {
 			}*/
 			
 			//S4: PMI
-			/**/
+			/*
 			if(i>0){
 				List<String> highestPMI = new ArrayList<String>();
 				for(int j=0;j<parseLists.get(i-1).size();j++){
@@ -211,7 +211,7 @@ public class Decoder {
 				}else{
 					System.out.println("Highest PMI is NULL");
 				}
-			}/**/
+			}*/
 			
 			/*
 			if(i>0){
