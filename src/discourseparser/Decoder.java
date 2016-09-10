@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -88,9 +89,11 @@ public class Decoder {
 			//S1: Oracle expansion, if not already present, add true logical form and 9 others as assigned candidate logical forms
 			
 			/**/
+			if((new Random()).nextDouble()<=0.8){
 			if(!hs_best.contains(ParsingUtils.simplify(sequence.get(i)))){
 				candidateParsesList.get(i).add( new CcgParseWrapper(ParsingUtils.simplify(sequence.get(i))) );
 				hs_best.add(ParsingUtils.simplify(sequence.get(i)));
+			}
 			}
 			
 			for(int c=0;c<9;c++){
