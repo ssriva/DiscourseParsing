@@ -88,12 +88,12 @@ public class Decoder {
 
 			//S1: Oracle expansion, if not already present, add true logical form and 9 others as assigned candidate logical forms
 			
-			/**/
+			/*
 			if((new Random()).nextDouble()<=0.8){
-			if(!hs_best.contains(ParsingUtils.simplify(sequence.get(i)))){
-				candidateParsesList.get(i).add( new CcgParseWrapper(ParsingUtils.simplify(sequence.get(i))) );
-				hs_best.add(ParsingUtils.simplify(sequence.get(i)));
-			}
+				if(!hs_best.contains(ParsingUtils.simplify(sequence.get(i)))){
+					candidateParsesList.get(i).add( new CcgParseWrapper(ParsingUtils.simplify(sequence.get(i))) );
+					hs_best.add(ParsingUtils.simplify(sequence.get(i)));
+				}
 			}
 			
 			for(int c=0;c<9;c++){
@@ -103,11 +103,18 @@ public class Decoder {
 					hs_best.add(str);
 				}
 			}
-			/**/
+			*/
 			
 			
 			//S2: Training set expansion: add most common candidates from training set
-			/*
+			/**/
+			if((new Random()).nextDouble()<=1.0){
+				if(!hs_best.contains(ParsingUtils.simplify(sequence.get(i)))){
+					candidateParsesList.get(i).add( new CcgParseWrapper(ParsingUtils.simplify(sequence.get(i))) );
+					hs_best.add(ParsingUtils.simplify(sequence.get(i)));
+				}
+			}
+			
 			int numCands = 0;
 			for(int c=0; c<40; c++){
 				String str = discourseParser.dataStatistics.mostCommon.get(c);
@@ -127,7 +134,7 @@ public class Decoder {
 				}
 			}
 			System.out.println("Training set expansion added "+numCands+" candidates. Gold: "+hs_best.contains(ParsingUtils.simplify(sequence.get(i))));
-			*/
+			/**/
 			
 			//S3: Prob
 			/*
