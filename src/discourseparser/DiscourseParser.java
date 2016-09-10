@@ -113,7 +113,8 @@ public class DiscourseParser implements Serializable {
 			int epochCorrect = 0, epochCounter = 0;
 
 			for(List<WeightedCcgExample>sequenceExample:shuffledSequences){
-
+				
+				System.out.println("Updating on new sequence. Counter: "+counter);
 				List<List<WeightedCcgExample>>partitions = Lists.partition(sequenceExample, Decoder.breakSequences ? Decoder.subsequenceSize:sequenceExample.size());
 				//Collections.shuffle(partitions);
 				
