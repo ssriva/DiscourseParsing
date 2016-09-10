@@ -32,6 +32,9 @@ public class Decoder {
 	public static boolean breakSequences = true;
 	public static int subsequenceSize = 5;
 	
+	public static int foundInCandidatesCount = 0;
+	public static int notFoundInCandidatesCount = 0;
+	
 	private static ExpressionSimplifier simplifier = CcgUtils.getExpressionSimplifier();
 	private static ExpressionComparator comparator = new SimplificationComparator(simplifier);
 	
@@ -225,14 +228,39 @@ public class Decoder {
 		//Now add best gold parses. If none are present, add a CcgParseWrapper with only the true label (and print NOT AWESOME).
 		List<List<CcgParseWrapper>> bestCorrectParsesList = new ArrayList<List<CcgParseWrapper>>();
 		for(int i=0;i<parseLists.size();i++){
+			
+			Boolean foundCorrectInCandidates = false;
 			List<CcgParse>correctParses = PerceptronUtils.filterParsesByLogicalForm(sequence.get(i).getLogicalForm(), comparator, parseLists.get(i), true);
-			if (correctParses.size() == 0 || correctParses==null) {
-				//add assigned logical form (String), if no correct parses
-				bestCorrectParsesList.add(Arrays.asList(new CcgParseWrapper(ParsingUtils.simplify(sequence.get(i))) ) );	//bestCorrectParsesList.add(new ArrayList<CcgParseWrapper>());
-				if(verbose) System.out.println("NOT AWESOME");
-			}else{
+
+			if (correctParses!=null && correctParses.size() > 0) {
+				foundCorrectInCandidates = true;
 				bestCorrectParsesList.add(Arrays.asList(new CcgParseWrapper(correctParses.get(0)) ) );
+			}else{
+				
+				if(verbose) System.out.println("NOT AWESOME");
+				for(int j=0; j<candidateParsesList.get(i).size();j++){
+					if(candidateParsesList.get(i).get(j).getStringLogicalForm().equals(ParsingUtils.simplify(sequence.get(i)))){
+						Preconditions.checkState(!candidateParsesList.get(i).get(j).isTrueParse(),"This shouldn't be a true parse");
+						foundCorrectInCandidates = true;
+						bestCorrectParsesList.add(Arrays.asList(new CcgParseWrapper(ParsingUtils.simplify(sequence.get(i))) ) );
+						break;
+					}
+				}
+				
+				if(!foundCorrectInCandidates){
+					bestCorrectParsesList.add(new ArrayList<CcgParseWrapper>(candidateParsesList.get(i)));
+				}
+				//bestCorrectParsesList.add(Arrays.asList(new CcgParseWrapper(ParsingUtils.simplify(sequence.get(i))) ) );
 			}
+					
+			if(!foundCorrectInCandidates){
+				notFoundInCandidatesCount++;
+				if(Decoder.verbose) System.out.println("True parse not found in candidate set. Sz: "+bestCorrectParsesList.get(i).size());
+			}else{
+				foundInCandidatesCount++;
+				if(Decoder.verbose) System.out.println("True parse found in candidate set. Sz: "+bestCorrectParsesList.get(i).size());
+			}
+
 		}
 		retVal.add(bestCorrectParsesList);
 
@@ -399,6 +427,8 @@ public class Decoder {
 		List<String> bestPath = Arrays.asList(optimalTags).subList(1, sequence.size()+1);
 
 		Preconditions.checkState(bestParses.size()==sequence.size() && bestPath.size()==sequence.size());
+		System.out.println("Candidate set recall(running): "+1.0*foundInCandidatesCount/(foundInCandidatesCount+notFoundInCandidatesCount));
+		
 		return new SequenceParse(bestParses, bestPath);
 		
 	}	

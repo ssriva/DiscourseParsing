@@ -164,9 +164,17 @@ public class FeatureGenerator {
 		return hmap;
 	}
 	
-	public static double getLogicalFormsOverlap(String candidateLogicalForm, String sentence){
-		int count = 0, matchedpred = 0;
+	static HashMap<String,Double> cache = new HashMap<String, Double>();
+	
+	public static double getLogicalFormsOverlap(String candidateLogicalForm, String sentence){	
 		
+		String key = candidateLogicalForm+"|"+sentence;
+		if(cache.containsKey(key)){
+			System.out.println("Retrieving from cache!!");
+			return cache.get(key);
+		}
+		
+		int count = 0, matchedpred = 0;		
 		Set<String> observedLogicalPredicates = logicalVocab.stream().filter(s -> Arrays.asList(candidateLogicalForm.split("[()\\s]+")).contains(s)).collect(Collectors.toSet());
 		Set<String> firingPredicates = new HashSet<String>();
 		
@@ -210,6 +218,8 @@ public class FeatureGenerator {
 				return 0.0;
 			}
 		}
+		
+		cache.put(key, fm);
 		return fm;
 	}
 }
