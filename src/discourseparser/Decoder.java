@@ -116,7 +116,7 @@ public class Decoder {
 			}
 			
 			int numCands = 0;
-			for(int c=0; c<40; c++){
+			for(int c=0; c<50; c++){
 				String str = discourseParser.dataStatistics.mostCommon.get(c);
 				if(!hs_best.contains(str) ){
 					double fm = features.FeatureGenerator.getLogicalFormsOverlap(str, String.join(" ", sequence.get(i).getSentence().getWords()));
