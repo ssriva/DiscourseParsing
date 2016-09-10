@@ -105,19 +105,26 @@ public class Decoder {
 			
 			//S2: Training set expansion: add most common candidates from training set
 			/**/
+			int numCands = 0;
 			for(int c=0; c<40; c++){
 				String str = discourseParser.dataStatistics.mostCommon.get(c);
 				if(!hs_best.contains(str) ){
 					double fm = features.FeatureGenerator.getLogicalFormsOverlap(str, String.join(" ", sequence.get(i).getSentence().getWords()));
 					if(fm>=0.4){
 						if(Decoder.verbose) System.out.println("fmeasure GOOD "+fm);
+						if(ParsingUtils.simplify(sequence.get(i)).equals(str)){
+							System.out.println("Grand success!");
+						}
 						candidateParsesList.get(i).add(new CcgParseWrapper(str));
 						hs_best.add(str);
+						numCands++;
 					}else{
 						if(Decoder.verbose) System.out.println("fmeasure BAD "+fm);
 					}
 				}
-			}/**/
+			}
+			System.out.println("Training set expansion added "+numCands+" candidates. Gold: "+hs_best.contains(ParsingUtils.simplify(sequence.get(i))));
+			/**/
 			
 			//S3: Prob
 			/*

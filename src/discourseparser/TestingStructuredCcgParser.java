@@ -42,7 +42,7 @@ public class TestingStructuredCcgParser {
 		System.out.println("numIters:\t"+numIters+"\nbeamSize:\t"+beamSize+"\nmaxLog:\t"+maxLogicalForms+"\nnumStates:\t"+numStates+"\n\n");
 
 		//Initialize discourse parser
-		boolean pretrain = false;
+		boolean pretrain = true;
 		DiscourseParser discourseParser = new DiscourseParser("data/lexiconEntries.txt", "data/lexiconSyn.txt", trainingDirectory, numStates, pretrain);
 		
 		/*
