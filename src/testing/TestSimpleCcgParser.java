@@ -1,15 +1,17 @@
 package testing;
 
-import java.nio.file.Paths;
-import java.util.Arrays;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import instructable.server.ccg.CcgUtils;
 import instructable.server.ccg.WeightedCcgExample;
 import parsing.SimpleParserSettings;
 import utils.ParsingUtils;
 
-import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.jayantkrish.jklol.ccg.CcgBeamSearchInference;
 import com.jayantkrish.jklol.ccg.CcgInference;
@@ -24,11 +26,11 @@ import com.jayantkrish.jklol.ccg.util.SemanticParserUtils;
 
 public class TestSimpleCcgParser {
 		
-	public static void main(String[] args){
+	public static void main(String[] args) throws IOException{
 		//SimpleParserSettings simpleParserSettings = ParsingUtils.createParser("data/lexiconEntries.txt", "data/lexiconSyn.txt", "data/", true);
 		
-		String trainingDirectory = "/Users/shashans/Work/DialogueData/dialogues/tabseparated/train/";
-		String testFile = "/Users/shashans/Work/DialogueData/dialogues/tabseparated/testexamples.csv";
+		String trainingDirectory = args[0]; //"/Users/shashans/Work/DialogueData/dialogues/tabseparated/train/";
+		String testDirectory = args[1]; //"/Users/shashans/Work/DialogueData/dialogues/tabseparated/test/";
 		SimpleParserSettings simpleParserSettings = ParsingUtils.createParser("data/lexiconEntries.txt", "data/lexiconSyn.txt", trainingDirectory, true);
 	    
 		//Decoder.getGoldAndCandidateParsesForSequence(simpleParserSettings.parser, simpleParserSettings.ccgExamples, 200, 15);
@@ -41,13 +43,17 @@ public class TestSimpleCcgParser {
 	    //SemanticParserUtils.testSemanticParser(WeightedCcgExample.toCcgExamples(simpleParserSettings.ccgExamples), simpleParserSettings.parser, inferenceAlgorithm, simplifier, comparator);
 
 	    System.out.println("Test error");
-	    List<String[]> exampleStrings = CcgUtils.loadExamples(Paths.get(testFile));	    
 	    List<WeightedCcgExample> testExamples = Lists.newArrayList();
-	    for (String[] exampleString : exampleStrings) {	      
-	      Expression2 expression = ExpressionParser.expression2().parseSingleExpression(exampleString[1]);
-	      WeightedCcgExample example = CcgUtils.createCcgExample(exampleString[0], expression, simpleParserSettings.posUsed, false, simpleParserSettings.featureVectorGenerator);
-	      testExamples.add(example);
+	    
+	    for(Path path:Files.list(new File(testDirectory).toPath()).filter(path -> path.getFileName().toString().endsWith(".csv")).collect(Collectors.toList())){
+	    	List<String[]> exampleStrings = CcgUtils.loadExamples(path);	    
+	    	for (String[] exampleString : exampleStrings) {	      
+	    		Expression2 expression = ExpressionParser.expression2().parseSingleExpression(exampleString[1]);
+	    		WeightedCcgExample example = CcgUtils.createCcgExample(exampleString[0], expression, simpleParserSettings.posUsed, false, simpleParserSettings.featureVectorGenerator);
+	    		testExamples.add(example);
+	    	}
 	    }
+	    
 	    SemanticParserUtils.testSemanticParser(WeightedCcgExample.toCcgExamples(testExamples), simpleParserSettings.parser, inferenceAlgorithm, simplifier, comparator);
 	    
 	    
