@@ -113,7 +113,7 @@ public class Decoder {
 			
 			
 			//S2: Training set expansion: add most common candidates from training set
-			/*
+			/**/
 			if((new Random()).nextDouble()<=0.0){
 				if(!hs_best.contains(ParsingUtils.simplify(sequence.get(i)))){
 					candidateParsesList.get(i).add( new CcgParseWrapper(ParsingUtils.simplify(sequence.get(i))) );
@@ -140,7 +140,7 @@ public class Decoder {
 				}
 			}
 			System.out.println("Training set expansion added "+numCands+" candidates. Gold: "+hs_best.contains(ParsingUtils.simplify(sequence.get(i))));
-			*/
+			/**/
 			
 			//S3: Prob
 			/*
@@ -185,7 +185,7 @@ public class Decoder {
 			}*/
 			
 			//S4: PMI
-			/**/
+			/*
 			if(i>0){
 				List<String> highestPMI = new ArrayList<String>();
 				for(int j=0;j<parseLists.get(i-1).size();j++){
@@ -211,7 +211,7 @@ public class Decoder {
 				}else{
 					System.out.println("Highest PMI is NULL");
 				}
-			}/**/
+			}*/
 			
 			/*
 			if(i>0){
