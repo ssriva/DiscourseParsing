@@ -46,7 +46,7 @@ public class TestingStructuredCcgParser {
 		
 		
 		//Initialize discourse parser
-		boolean pretrain = true;
+		boolean pretrain = false;
 		DiscourseParser discourseParser = new DiscourseParser("data/lexiconEntries.txt", "data/lexiconSyn.txt", trainingDirectory, numStates, pretrain);
 		
 		/*
