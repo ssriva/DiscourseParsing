@@ -44,7 +44,7 @@ public class TestRoteLearner {
 
 		//Test directory
 		int correct = 0, incorrect = 0;
-		for(Path path:Files.list(new File(trainingDirectory).toPath()).filter(path -> path.getFileName().toString().endsWith(".csv")).collect(Collectors.toList())){
+		for(Path path:Files.list(new File(testDirectory).toPath()).filter(path -> path.getFileName().toString().endsWith(".csv")).collect(Collectors.toList())){
 		    List<String[]> exampleStrings = CcgUtils.loadExamples(path);	    
 
 		    for (String[] exampleString : exampleStrings) {	      
