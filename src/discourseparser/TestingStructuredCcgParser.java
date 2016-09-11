@@ -46,16 +46,16 @@ public class TestingStructuredCcgParser {
 		
 		
 		//Initialize discourse parser
-		boolean pretrain = false;
+		boolean pretrain = true;
 		DiscourseParser discourseParser = new DiscourseParser("data/lexiconEntries.txt", "data/lexiconSyn.txt", trainingDirectory, numStates, pretrain);
 		
-		/*
+		/**/
 		System.out.println("simple evaluation");
 		CcgInference inferenceAlgorithm = new CcgBeamSearchInference(null, comparator, 100, -1, Integer.MAX_VALUE, Runtime.getRuntime().availableProcessors(), false);	    
 		List<WeightedCcgExample> flatExamples = discourseParser.ccgExamples.stream().flatMap(l -> l.stream()).collect(Collectors.toList());
 		SemanticParserUtils.testSemanticParser(WeightedCcgExample.toCcgExamples(flatExamples), discourseParser.parser, inferenceAlgorithm, simplifier, comparator);
 		System.exit(0);
-		*/
+		/**/
 		
 		//Calculate total recall
 		/*
