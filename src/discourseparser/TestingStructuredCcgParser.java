@@ -38,9 +38,13 @@ public class TestingStructuredCcgParser {
 		int beamSize = (args.length>2 && edu.stanford.nlp.util.StringUtils.isNumeric(args[2])) ? Integer.parseInt(args[2]) : 200;
 		int maxLogicalForms =   (args.length>3 && edu.stanford.nlp.util.StringUtils.isNumeric(args[3])) ? Integer.parseInt(args[3]) : 15;
 		int numStates =(args.length>4 && edu.stanford.nlp.util.StringUtils.isNumeric(args[4])) ? Integer.parseInt(args[4]) : 5;
+		String testDirectory = (args.length>5) ? args[5]: "/Users/shashans/Work/DialogueData/dialogues/tabseparated/test/";
+		
 		System.out.println("Training Directory:"+trainingDirectory);
+		System.out.println("Testing Directory:"+testDirectory);
 		System.out.println("numIters:\t"+numIters+"\nbeamSize:\t"+beamSize+"\nmaxLog:\t"+maxLogicalForms+"\nnumStates:\t"+numStates+"\n\n");
-
+		
+		
 		//Initialize discourse parser
 		boolean pretrain = false;
 		DiscourseParser discourseParser = new DiscourseParser("data/lexiconEntries.txt", "data/lexiconSyn.txt", trainingDirectory, numStates, pretrain);
@@ -68,14 +72,12 @@ public class TestingStructuredCcgParser {
 		
 		//Evaluate discourse parser
 		DiscourseParsingUtils.testDiscourseParser(discourseParser.ccgExamples, discourseParser, beamSize, maxLogicalForms, simplifier, comparator);
-		//String testDirectory = "/Users/shashans/Work/DialogueData/dialogues/tabseparated/test/";
-		//DiscourseParsingUtils.testDiscourseParser(discourseParser.getNewCcgSequences(testDirectory), discourseParser, beamSize, maxLogicalForms, simplifier, comparator);
+		DiscourseParsingUtils.testDiscourseParser(discourseParser.getNewCcgSequences(testDirectory), discourseParser, beamSize, maxLogicalForms, simplifier, comparator);
 		//System.exit(0);
 		
 		//Save model	
 		String modelName=trainingDirectory+"model_"+numIters+"_"+beamSize+"_"+maxLogicalForms+"_"+numStates+"_"+pretrain;
 		saveToFile(discourseParser.parserParameters, modelName+".parserParams");
-		//saveToFile(discourseParser.weights, modelName+".weights");
 		writeWeights(discourseParser.weights, modelName+".weights");
 		  
 	}
