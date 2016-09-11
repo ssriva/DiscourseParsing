@@ -54,8 +54,8 @@ public class DataStatistics implements Serializable {
 		for(String prevLogicalForm:bigramCount.keySet()){
 			ArrayList<Successor> aL = new ArrayList<DataStatistics.Successor>();
 			for(String successor:bigramCount.get(prevLogicalForm).keySet()){
-				//Only calculate pmi if type occurs at least 2 times in the data
-				if(unigramCount.get(successor)>=2)
+				//Only calculate pmi if type occurs at least 1 times in the data
+				if(unigramCount.get(successor)>=1)
 					aL.add(new Successor(successor, 1.0 * bigramCount.get(prevLogicalForm).get(successor)/unigramCount.get(successor)) );
 			}
 			Collections.sort(aL, (o1, o2) -> new Double(o1.val).compareTo(new Double(o2.val)) );
@@ -76,8 +76,8 @@ public class DataStatistics implements Serializable {
 		for(String prevLogicalForm:bigramCount.keySet()){
 			ArrayList<Successor> aL = new ArrayList<DataStatistics.Successor>();
 			for(String successor:bigramCount.get(prevLogicalForm).keySet()){
-				//Only calculate pmi if type occurs at least 2 times in the data
-				if(unigramCount.get(successor)>=2)
+				//Only calculate pmi if type occurs at least 1 times in the data
+				if(unigramCount.get(successor)>=1)
 					aL.add(new Successor(successor, 1.0 * bigramCount.get(prevLogicalForm).get(successor)) );
 			}
 			Collections.sort(aL, (o1, o2) -> new Double(o1.val).compareTo(new Double(o2.val)) );
