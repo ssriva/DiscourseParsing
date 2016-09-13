@@ -143,7 +143,7 @@ public class Decoder {
 			*/
 			
 			//S3: Prob
-			/*
+			/**/
 			if(i>0){
 				List<String> highestProb = new ArrayList<String>();
 				for(int j=0;j<parseLists.get(i-1).size();j++){
@@ -170,7 +170,7 @@ public class Decoder {
 					System.out.println("Highest Prob is NULL");
 				}
 			}
-			*/
+			/**/
 			
 			/*
 			if(i>0){
