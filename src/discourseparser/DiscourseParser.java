@@ -134,7 +134,8 @@ public class DiscourseParser implements Serializable {
 					SufficientStatistics gradient = parserFamily.getNewSufficientStatistics();
 					for(int i=0; i<sequence.size();i++){
 
-						if(Decoder.verbose) System.out.println("ITER"+(counter++)); //(iter+i));
+						if(Decoder.verbose) System.out.println("ITER"+counter); //(iter+i));
+						counter++;
 						WeightedCcgExample example = sequence.get(i);
 
 						/*

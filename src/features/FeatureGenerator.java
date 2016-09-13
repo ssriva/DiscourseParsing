@@ -40,7 +40,7 @@ public class FeatureGenerator {
 		
 		ArrayList<String> featureVec = new ArrayList<String>();
 		
-		//Lexical matching
+		
 		if(index!=sequence.size()+1){
 			String sentence  = String.join(" ", sequence.get(index-1).getSentence().getWords());
 			for(String phrase:invokedLogicalPredicates.keySet()){
