@@ -40,6 +40,22 @@ public class FeatureGenerator {
 		
 		ArrayList<String> featureVec = new ArrayList<String>();
 		
+		//Lexical matching
+		if(index!=sequence.size()+1){
+			String sentence  = String.join(" ", sequence.get(index-1).getSentence().getWords());
+			for(String phrase:invokedLogicalPredicates.keySet()){
+				if(sentence.contains(phrase)){
+					Set<String> intersection = new HashSet<String>(invokedLogicalPredicates.get(phrase));
+					intersection.retainAll(logicalVocab.stream().filter(s -> Arrays.asList(curLogicalForm.split("[()\\s]+")).contains(s)).collect(Collectors.toSet()));
+					for(String matchedLogicalPredicate:intersection){
+						featureVec.add(genKey("Lex_Wi",phrase,"Li",matchedLogicalPredicate));
+						//System.out.println("ADDING "+genKey("Lex_Wi",phrase,"Li",matchedLogicalPredicate));
+					}
+				}
+			}
+		}
+		
+		/*
 		//Add transition features:
 		featureVec.add(genKey("Zi",state,"Zi-1",prevstate));
 		
@@ -57,7 +73,6 @@ public class FeatureGenerator {
 		}
 		
 		//Lexical matching
-		/**/
 		if(index!=sequence.size()+1){
 			String sentence  = String.join(" ", sequence.get(index-1).getSentence().getWords());
 			for(String phrase:invokedLogicalPredicates.keySet()){
@@ -71,12 +86,10 @@ public class FeatureGenerator {
 				}
 			}
 		}
-		/**/
 		
 		//Add emission features for complete logical forms
 		featureVec.add(genKey("Zi",state,"Li",curLogicalForm));
 		featureVec.add(genKey("Zi",state,"Li-1",prevLogicalForm));
-		/**/
 		featureVec.add(genKey("Li-1",prevLogicalForm,"Li", curLogicalForm));
 		featureVec.add(genKey("Zi",state,"Li-1",prevLogicalForm,"Li", curLogicalForm));
 		
@@ -88,14 +101,13 @@ public class FeatureGenerator {
 		//Features based on Si-1
 		
 		//Features based on whether the current parse is an assigned parse.
-		/**/
 		if(index != sequence.size()+1){
 			if(!isTrue){
 				int len = (sequence.size()/7)*7;
 				featureVec.add(genKey("assignedParse",1));
 				featureVec.add(genKey("assignedParseLen",len));
 			}
-		}/**/
+		}
 		
 		//Add features based on whether an utterance is inside a procedure
 		int insideProcedure=0, beginIdx = -1;
@@ -115,7 +127,7 @@ public class FeatureGenerator {
 		featureVec.add(genKey("Zi",state,"Li", curLogicalForm,"InProcedure",insideProcedure));
 		featureVec.add(genKey("Li",curLogicalForm,"InProcedure",insideProcedure));
 		featureVec.add(genKey("Li",curLogicalForm,"Li-1", prevLogicalForm,"InProcedure",insideProcedure));
-		/**/
+		*/
 		return featureVec;
 	}
 	

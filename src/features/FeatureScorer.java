@@ -58,7 +58,7 @@ public class FeatureScorer {
 		
 		//Do not add score from parse features for index=N+1 (no corresponding sentence), or if sentence at current index has missing parse
 		double val = (index==sequence.size()+1)? 0.0	//|| missing[index-1] 
-				: isTrue ? Math.log(parseLists.get(index-1).get(curLogicalIdx).getCcgParse().getSubtreeProbability()) 
+				: isTrue ? 0.0 //Math.log(parseLists.get(index-1).get(curLogicalIdx).getCcgParse().getSubtreeProbability()) 
 				: 0.0;
 
 		if(Double.isNaN(val)){
