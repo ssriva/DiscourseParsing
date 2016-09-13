@@ -40,22 +40,8 @@ public class FeatureGenerator {
 		
 		ArrayList<String> featureVec = new ArrayList<String>();
 		
-		
-		if(index!=sequence.size()+1){
-			String sentence  = String.join(" ", sequence.get(index-1).getSentence().getWords());
-			for(String phrase:invokedLogicalPredicates.keySet()){
-				if(sentence.contains(phrase)){
-					Set<String> intersection = new HashSet<String>(invokedLogicalPredicates.get(phrase));
-					intersection.retainAll(logicalVocab.stream().filter(s -> Arrays.asList(curLogicalForm.split("[()\\s]+")).contains(s)).collect(Collectors.toSet()));
-					for(String matchedLogicalPredicate:intersection){
-						featureVec.add(genKey("Lex_Wi",phrase,"Li",matchedLogicalPredicate));
-						//System.out.println("ADDING "+genKey("Lex_Wi",phrase,"Li",matchedLogicalPredicate));
-					}
-				}
-			}
-		}
-		
-		/*
+				
+		/**/
 		//Add transition features:
 		featureVec.add(genKey("Zi",state,"Zi-1",prevstate));
 		
@@ -127,7 +113,7 @@ public class FeatureGenerator {
 		featureVec.add(genKey("Zi",state,"Li", curLogicalForm,"InProcedure",insideProcedure));
 		featureVec.add(genKey("Li",curLogicalForm,"InProcedure",insideProcedure));
 		featureVec.add(genKey("Li",curLogicalForm,"Li-1", prevLogicalForm,"InProcedure",insideProcedure));
-		*/
+		/**/
 		return featureVec;
 	}
 	
