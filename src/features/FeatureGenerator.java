@@ -87,7 +87,6 @@ public class FeatureGenerator {
 		//Features based on Si-1
 		
 		//Features based on whether the current parse is an assigned parse.
-		/*
 		if(index != sequence.size()+1){
 			if(!isTrue){
 				int len = (sequence.size()/7)*7;
@@ -95,7 +94,7 @@ public class FeatureGenerator {
 				featureVec.add(genKey("assignedParseLen",len));
 			}
 		}
-		*/
+		
 		
 		//Add features based on whether an utterance is inside a procedure
 		int insideProcedure=0, beginIdx = -1;
@@ -111,10 +110,13 @@ public class FeatureGenerator {
 			}
 		}
 		
+		/*
 		featureVec.add(genKey("Zi",state,"InProcedure",insideProcedure));
 		featureVec.add(genKey("Zi",state,"Li", curLogicalForm,"InProcedure",insideProcedure));
 		featureVec.add(genKey("Li",curLogicalForm,"InProcedure",insideProcedure));
 		featureVec.add(genKey("Li",curLogicalForm,"Li-1", prevLogicalForm,"InProcedure",insideProcedure));
+		*/
+		
 		/**/
 		return featureVec;
 	}
