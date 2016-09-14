@@ -59,6 +59,7 @@ public class FeatureGenerator {
 		}
 		
 		//Lexical matching
+		/*
 		if(index!=sequence.size()+1){
 			String sentence  = String.join(" ", sequence.get(index-1).getSentence().getWords());
 			for(String phrase:invokedLogicalPredicates.keySet()){
@@ -72,6 +73,7 @@ public class FeatureGenerator {
 				}
 			}
 		}
+		*/
 		
 		//Add emission features for complete logical forms
 		featureVec.add(genKey("Zi",state,"Li",curLogicalForm));
@@ -110,12 +112,10 @@ public class FeatureGenerator {
 			}
 		}
 		
-		/*
 		featureVec.add(genKey("Zi",state,"InProcedure",insideProcedure));
 		featureVec.add(genKey("Zi",state,"Li", curLogicalForm,"InProcedure",insideProcedure));
 		featureVec.add(genKey("Li",curLogicalForm,"InProcedure",insideProcedure));
 		featureVec.add(genKey("Li",curLogicalForm,"Li-1", prevLogicalForm,"InProcedure",insideProcedure));
-		*/
 		
 		/**/
 		return featureVec;
