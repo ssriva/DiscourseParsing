@@ -43,7 +43,6 @@ public class FeatureGenerator {
 				
 		/**/
 		//Add transition features:
-		
 		/*
 		featureVec.add(genKey("Zi",state,"Zi-1",prevstate));
 		
@@ -59,7 +58,6 @@ public class FeatureGenerator {
 			System.err.println("Shouldn't be here");
 			System.exit(-1);
 		}
-		*/
 		
 		//Lexical matching
 		if(index!=sequence.size()+1){
@@ -77,13 +75,11 @@ public class FeatureGenerator {
 		}
 		
 		//Add emission features for complete logical forms
-		/*
 		featureVec.add(genKey("Zi",state,"Li",curLogicalForm));
 		featureVec.add(genKey("Zi",state,"Li-1",prevLogicalForm));
 		featureVec.add(genKey("Li-1",prevLogicalForm,"Li", curLogicalForm));
 		featureVec.add(genKey("Zi",state,"Li-1",prevLogicalForm,"Li", curLogicalForm));
 		*/
-		
 		//Add features based on pairs of lexemes
 		
 		//Add Features based on most common commands
@@ -117,7 +113,7 @@ public class FeatureGenerator {
 		featureVec.add(genKey("Zi",state,"InProcedure",insideProcedure));
 		featureVec.add(genKey("Zi",state,"Li", curLogicalForm,"InProcedure",insideProcedure));
 		featureVec.add(genKey("Li",curLogicalForm,"InProcedure",insideProcedure));
-		featureVec.add(genKey("Li",curLogicalForm,"Li-1", prevLogicalForm,"InProcedure",insideProcedure));
+		//featureVec.add(genKey("Li",curLogicalForm,"Li-1", prevLogicalForm,"InProcedure",insideProcedure));
 		
 		/**/
 		return featureVec;
